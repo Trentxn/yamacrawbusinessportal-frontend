@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { User, Lock, Save, Mail, Phone, Loader2, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { authApi } from '@/api/auth'
+import { useAuth } from '@/contexts/AuthContext'
 import type { AxiosError } from 'axios'
 
 // ---------------------------------------------------------------------------
@@ -49,6 +50,7 @@ function InlineBanner({ banner, onDismiss }: { banner: Banner; onDismiss: () => 
 
 function ProfileSection() {
   const queryClient = useQueryClient()
+  const { updateUser } = useAuth()
 
   const { data: user, isLoading, isError } = useQuery({
     queryKey: ['me'],
@@ -76,8 +78,9 @@ function ProfileSection() {
         lastName: lastName.trim(),
         phone: phone.trim() || null,
       }),
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ['me'] })
+      updateUser(res.data)
       setBanner({ type: 'success', message: 'Profile updated successfully.' })
     },
     onError: (err: AxiosError<{ message?: string; detail?: string }>) => {
