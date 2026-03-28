@@ -2,8 +2,8 @@ import client from './client'
 import type { AuthResponse, User } from './types'
 
 export const authApi = {
-  login(email: string, password: string) {
-    return client.post<AuthResponse>('/auth/login', { email, password })
+  login(email: string, password: string, captchaToken?: string) {
+    return client.post<AuthResponse>('/auth/login', { email, password, captchaToken })
   },
 
   register(data: {
@@ -35,8 +35,8 @@ export const authApi = {
     return client.post('/auth/forgot-password', { email, captchaToken })
   },
 
-  resetPassword(token: string, password: string) {
-    return client.post('/auth/reset-password', { token, password })
+  resetPassword(token: string, newPassword: string) {
+    return client.post('/auth/reset-password', { token, newPassword })
   },
 
   resendVerification(email: string) {

@@ -65,9 +65,10 @@ export default function ResetPasswordPage() {
       setSuccess(true)
       setTimeout(() => navigate('/login', { replace: true }), 3000)
     } catch (err) {
-      const axiosErr = err as AxiosError<{ message?: string }>
+      const axiosErr = err as AxiosError<{ message?: string; detail?: string }>
       setServerError(
-        axiosErr.response?.data?.message ||
+        axiosErr.response?.data?.detail ||
+          axiosErr.response?.data?.message ||
           'Password reset failed. The link may have expired. Please request a new one.'
       )
     }
