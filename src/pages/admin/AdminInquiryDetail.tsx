@@ -11,6 +11,7 @@ import {
 import { serviceRequestsApi } from '@/api/serviceRequests'
 import { useAuth } from '@/contexts/AuthContext'
 import client from '@/api/client'
+import ConfirmModal from '@/components/ConfirmModal'
 import type { ServiceRequestStatus, InquiryMessage } from '@/api/types'
 
 // ─── Status config ───────────────────────────────────────────────────────────
@@ -346,6 +347,7 @@ export default function AdminInquiryDetail() {
   const [toast, setToast] = useState<Toast | null>(null)
   const [showCloseModal, setShowCloseModal] = useState(false)
   const [showFlagModal, setShowFlagModal] = useState(false)
+  const [showReopenConfirm, setShowReopenConfirm] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const showToast = (type: Toast['type'], message: string) => {
@@ -566,7 +568,7 @@ export default function AdminInquiryDetail() {
 
               {canReopen && (
                 <button
-                  onClick={() => reopenMutation.mutate()}
+                  onClick={() => setShowReopenConfirm(true)}
                   disabled={reopenMutation.isPending}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-surface-200 bg-white px-3.5 py-2 text-sm font-medium text-surface-600 hover:border-primary-200 hover:text-primary-600 hover:bg-primary-50 transition-colors disabled:opacity-50"
                 >
@@ -619,6 +621,20 @@ export default function AdminInquiryDetail() {
           </motion.div>
         )}
       </div>
+
+      <ConfirmModal
+        open={showReopenConfirm}
+        onClose={() => setShowReopenConfirm(false)}
+        onConfirm={() => {
+          reopenMutation.mutate()
+          setShowReopenConfirm(false)
+        }}
+        title="Reopen Inquiry"
+        message="Are you sure you want to reopen this inquiry? The conversation thread will become active again."
+        confirmLabel="Yes, reopen it"
+        confirmVariant="primary"
+        loading={reopenMutation.isPending}
+      />
     </>
   )
 }

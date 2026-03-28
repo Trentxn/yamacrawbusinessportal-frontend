@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Check, X, ChevronLeft, ChevronRight, Loader2, Users } from 'lucide-react'
 import { adminApi } from '@/api/admin'
 import { useAuth } from '@/contexts/AuthContext'
+import ConfirmModal from '@/components/ConfirmModal'
 import type { UserRole, UserStatus } from '@/api/types'
 
 const fadeIn = {
@@ -59,6 +60,7 @@ export default function AdminUserList() {
   const [statusFilter, setStatusFilter] = useState('')
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [selectedRole, setSelectedRole] = useState<UserRole | ''>('')
+  const [confirmRoleChange, setConfirmRoleChange] = useState<{ userId: string; userName: string; fromRole: UserRole; toRole: UserRole } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'users', { page, role: roleFilter, status: statusFilter }],
@@ -98,7 +100,14 @@ export default function AdminUserList() {
 
   function saveRole(userId: string) {
     if (!selectedRole) return
-    updateRoleMutation.mutate({ id: userId, role: selectedRole })
+    const user = users.find((u) => u.id === userId)
+    if (!user) return
+    setConfirmRoleChange({
+      userId,
+      userName: `${user.firstName} ${user.lastName}`,
+      fromRole: user.role,
+      toRole: selectedRole as UserRole,
+    })
   }
 
   // Determine which roles this admin can assign
@@ -312,6 +321,25 @@ export default function AdminUserList() {
           Failed to update user role. You may not have permission to assign this role.
         </p>
       )}
+
+      <ConfirmModal
+        open={!!confirmRoleChange}
+        onClose={() => setConfirmRoleChange(null)}
+        onConfirm={() => {
+          if (!confirmRoleChange) return
+          updateRoleMutation.mutate({ id: confirmRoleChange.userId, role: confirmRoleChange.toRole })
+          setConfirmRoleChange(null)
+        }}
+        title="Change User Role"
+        message={
+          confirmRoleChange
+            ? `Are you sure you want to change ${confirmRoleChange.userName}'s role from "${roleLabel[confirmRoleChange.fromRole]}" to "${roleLabel[confirmRoleChange.toRole]}"?`
+            : ''
+        }
+        confirmLabel="Yes, change role"
+        confirmVariant="warning"
+        loading={updateRoleMutation.isPending}
+      />
     </motion.div>
   )
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { businessesApi } from '@/api/businesses'
+import ConfirmModal from '@/components/ConfirmModal'
 import type { BusinessListItem } from '@/api/businesses'
 import type { BusinessStatus } from '@/api/types'
 import {
@@ -49,6 +50,7 @@ const STATUS_CONFIG: Record<
 export default function MyListings() {
   const queryClient = useQueryClient()
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{ type: 'archive' | 'reactivate'; listing: BusinessListItem } | null>(null)
 
   const showToast = (type: 'success' | 'error', message: string) => {
     setToast({ type, message })
@@ -200,13 +202,36 @@ export default function MyListings() {
               key={listing.id}
               listing={listing}
               onSubmit={() => submitMutation.mutate(listing.id)}
-              onArchive={() => archiveMutation.mutate(listing.id)}
-              onReactivate={() => reactivateMutation.mutate(listing.id)}
+              onArchive={() => setConfirmAction({ type: 'archive', listing })}
+              onReactivate={() => setConfirmAction({ type: 'reactivate', listing })}
               disabled={isMutating}
             />
           ))}
         </div>
       )}
+
+      <ConfirmModal
+        open={!!confirmAction}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={() => {
+          if (!confirmAction) return
+          if (confirmAction.type === 'archive') {
+            archiveMutation.mutate(confirmAction.listing.id)
+          } else {
+            reactivateMutation.mutate(confirmAction.listing.id)
+          }
+          setConfirmAction(null)
+        }}
+        title={confirmAction?.type === 'archive' ? 'Archive Listing' : 'Reactivate Listing'}
+        message={
+          confirmAction?.type === 'archive'
+            ? `Are you sure you want to archive "${confirmAction.listing.name}"? It will be removed from the public directory until you reactivate it.`
+            : `Are you sure you want to reactivate "${confirmAction?.listing.name}"? It will be visible in the public directory again.`
+        }
+        confirmLabel={confirmAction?.type === 'archive' ? 'Yes, archive it' : 'Yes, reactivate it'}
+        confirmVariant={confirmAction?.type === 'archive' ? 'warning' : 'primary'}
+        loading={archiveMutation.isPending || reactivateMutation.isPending}
+      />
     </div>
   )
 }

@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   Send,
 } from 'lucide-react'
+import ConfirmModal from '@/components/ConfirmModal'
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 
@@ -102,6 +103,7 @@ export default function EditListing() {
   const [logoUploading, setLogoUploading] = useState(false)
   const [photoUploading, setPhotoUploading] = useState(false)
   const [photosToDelete, setPhotosToDelete] = useState<string[]>([])
+  const [photoToRemove, setPhotoToRemove] = useState<number | null>(null)
   const [formReady, setFormReady] = useState(false)
   const logoInputRef = useRef<HTMLInputElement>(null)
   const photoInputRef = useRef<HTMLInputElement>(null)
@@ -288,6 +290,7 @@ export default function EditListing() {
       setPhotosToDelete((prev) => [...prev, photo.id!])
     }
     removePhoto(index)
+    setPhotoToRemove(null)
   }
 
   // ─── Build API payload ────────────────────────────────────────────────────
@@ -713,7 +716,7 @@ export default function EditListing() {
                 />
                 <button
                   type="button"
-                  onClick={() => handleRemovePhoto(index)}
+                  onClick={() => setPhotoToRemove(index)}
                   className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -794,6 +797,18 @@ export default function EditListing() {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        open={photoToRemove !== null}
+        onClose={() => setPhotoToRemove(null)}
+        onConfirm={() => {
+          if (photoToRemove !== null) handleRemovePhoto(photoToRemove)
+        }}
+        title="Remove Photo"
+        message={`Are you sure you want to remove this photo? This change will be saved when you submit the form.`}
+        confirmLabel="Yes, remove it"
+        confirmVariant="danger"
+      />
     </motion.div>
   )
 }

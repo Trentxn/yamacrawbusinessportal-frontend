@@ -21,6 +21,7 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { adminApi } from '@/api/admin'
+import ConfirmModal from '@/components/ConfirmModal'
 import type { BusinessStatus } from '@/api/types'
 
 const statusConfig: Record<
@@ -64,6 +65,7 @@ export default function AdminBusinessDetail() {
 
   const [showRejectModal, setShowRejectModal] = useState(false)
   const [showSuspendModal, setShowSuspendModal] = useState(false)
+  const [showUnsuspendConfirm, setShowUnsuspendConfirm] = useState(false)
   const [reason, setReason] = useState('')
 
   const { data: business, isLoading, isError } = useQuery({
@@ -216,7 +218,7 @@ export default function AdminBusinessDetail() {
           )}
           {business.status === 'suspended' && (
             <button
-              onClick={() => unsuspendMutation.mutate()}
+              onClick={() => setShowUnsuspendConfirm(true)}
               disabled={unsuspendMutation.isPending}
               className="inline-flex items-center gap-1.5 bg-green-600 text-white hover:bg-green-700 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
             >
@@ -500,6 +502,21 @@ export default function AdminBusinessDetail() {
           </div>
         </div>
       )}
+
+      {/* Unsuspend Confirm */}
+      <ConfirmModal
+        open={showUnsuspendConfirm}
+        onClose={() => setShowUnsuspendConfirm(false)}
+        onConfirm={() => {
+          unsuspendMutation.mutate()
+          setShowUnsuspendConfirm(false)
+        }}
+        title="Unsuspend Business"
+        message={`Are you sure you want to unsuspend "${business.name}"? This will restore the listing and make it publicly visible again.`}
+        confirmLabel="Yes, unsuspend"
+        confirmVariant="primary"
+        loading={unsuspendMutation.isPending}
+      />
 
       {/* Suspend Modal */}
       {showSuspendModal && (

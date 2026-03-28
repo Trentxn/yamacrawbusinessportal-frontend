@@ -23,6 +23,7 @@ import {
 import { serviceRequestsApi } from '@/api/serviceRequests'
 import client from '@/api/client'
 import { useAuth } from '@/contexts/AuthContext'
+import ConfirmModal from '@/components/ConfirmModal'
 import type { ServiceRequestStatus, InquiryMessage } from '@/api/types'
 
 // ─── Status badge ────────────────────────────────────────────────────────────
@@ -279,6 +280,7 @@ export default function UserInquiryDetail() {
   const [messageText, setMessageText] = useState('')
   const [toast, setToast] = useState<Toast | null>(null)
   const [showCloseModal, setShowCloseModal] = useState(false)
+  const [showReopenConfirm, setShowReopenConfirm] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [showFlagModal, setShowFlagModal] = useState(false)
   const [flagReason, setFlagReason] = useState('')
@@ -506,7 +508,7 @@ export default function UserInquiryDetail() {
                 {/* Reopen button */}
                 {canReopen && (
                   <button
-                    onClick={() => reopenMutation.mutate()}
+                    onClick={() => setShowReopenConfirm(true)}
                     disabled={reopenMutation.isPending}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-surface-200 bg-white px-3 py-1 text-xs font-medium text-surface-600 hover:border-primary-200 hover:text-primary-600 hover:bg-primary-50 transition-colors ml-auto disabled:opacity-50"
                   >
@@ -635,6 +637,20 @@ export default function UserInquiryDetail() {
           </motion.div>
         )}
       </div>
+
+      <ConfirmModal
+        open={showReopenConfirm}
+        onClose={() => setShowReopenConfirm(false)}
+        onConfirm={() => {
+          reopenMutation.mutate()
+          setShowReopenConfirm(false)
+        }}
+        title="Reopen Inquiry"
+        message="Are you sure you want to reopen this inquiry? The conversation thread will become active again."
+        confirmLabel="Yes, reopen it"
+        confirmVariant="primary"
+        loading={reopenMutation.isPending}
+      />
     </>
   )
 }

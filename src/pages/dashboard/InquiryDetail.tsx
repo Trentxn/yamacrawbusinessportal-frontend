@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { serviceRequestsApi } from '@/api/serviceRequests'
 import { useAuth } from '@/contexts/AuthContext'
+import ConfirmModal from '@/components/ConfirmModal'
 import type { ServiceRequestStatus, InquiryMessage } from '@/api/types'
 
 // ─── Status badge ────────────────────────────────────────────────────────────
@@ -274,6 +275,7 @@ export default function InquiryDetail() {
   const [toast, setToast] = useState<Toast | null>(null)
   const [showCloseModal, setShowCloseModal] = useState(false)
   const [confirmSpam, setConfirmSpam] = useState(false)
+  const [showReopenConfirm, setShowReopenConfirm] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const showToast = (type: Toast['type'], message: string) => {
@@ -516,7 +518,7 @@ export default function InquiryDetail() {
               </div>
               {canReopen && (
                 <button
-                  onClick={() => reopenMutation.mutate()}
+                  onClick={() => setShowReopenConfirm(true)}
                   disabled={isMutating}
                   className="inline-flex items-center gap-1.5 border border-primary-200 text-primary-600 hover:bg-primary-50 font-medium py-1.5 px-3 rounded-lg text-xs transition-colors disabled:opacity-50 shrink-0"
                 >
@@ -655,6 +657,20 @@ export default function InquiryDetail() {
           </div>
         )}
       </motion.div>
+
+      <ConfirmModal
+        open={showReopenConfirm}
+        onClose={() => setShowReopenConfirm(false)}
+        onConfirm={() => {
+          reopenMutation.mutate()
+          setShowReopenConfirm(false)
+        }}
+        title="Reopen Inquiry"
+        message="Are you sure you want to reopen this inquiry? The conversation thread will become active again."
+        confirmLabel="Yes, reopen it"
+        confirmVariant="primary"
+        loading={reopenMutation.isPending}
+      />
     </>
   )
 }
