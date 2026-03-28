@@ -76,8 +76,8 @@ function ToastBanner({ toast }: { toast: Toast }) {
 // ─── Close reasons ───────────────────────────────────────────────────────────
 
 const CLOSE_REASONS = [
-  'Resolved — got the info I needed',
-  'Resolved — hired this business',
+  'Resolved - got the info I needed',
+  'Resolved - hired this business',
   'No longer needed',
   'Found another provider',
   'Other',

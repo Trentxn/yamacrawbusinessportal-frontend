@@ -16,7 +16,7 @@ import client from '@/api/client'
 interface FeedbackStats {
   averageRating: number
   totalCount: number
-  distribution: Record<string, number>
+  ratingDistribution: Record<string, number>
 }
 
 interface FeedbackEntry {
@@ -101,7 +101,7 @@ export default function PortalFeedback() {
   const entries = data?.items ?? []
   const totalPages = data?.totalPages ?? 1
 
-  const distribution = stats?.distribution ?? {}
+  const distribution = stats?.ratingDistribution ?? {}
   const maxDistCount = Math.max(...Object.values(distribution), 1)
 
   return (

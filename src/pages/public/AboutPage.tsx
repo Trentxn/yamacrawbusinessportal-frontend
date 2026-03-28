@@ -55,7 +55,7 @@ export default function AboutPage() {
             </h3>
             <p className="mt-2 text-surface-600">
               We bridge the gap between residents looking for services and the
-              local businesses that provide them — making it simple to find,
+              local businesses that provide them, making it simple to find,
               contact, and support businesses in your own community.
             </p>
           </div>
@@ -65,7 +65,7 @@ export default function AboutPage() {
             </h3>
             <p className="mt-2 text-surface-600">
               Whether you need a plumber, a caterer, or a contractor, the
-              portal puts the information you need at your fingertips —
+              portal puts the information you need at your fingertips:
               operating hours, contact details, photos, and more.
             </p>
           </div>
@@ -89,7 +89,7 @@ export default function AboutPage() {
           <p>
             <span className="font-semibold text-surface-900">For residents:</span>{' '}
             Browse the directory, search by category or keyword, and reach out
-            to any business through our secure inquiry form — no account
+            to any business through our secure inquiry form. No account
             required.
           </p>
           <p>

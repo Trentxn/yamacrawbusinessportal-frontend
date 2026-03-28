@@ -95,7 +95,7 @@ const sections = [
     number: 11,
     title: 'Indemnification',
     content: [
-      'You agree to indemnify, defend, and hold harmless the Yamacraw Business Portal, its sponsors, administrators, and representatives from and against any claims, liabilities, damages, losses, and expenses — including reasonable legal fees — arising out of or in any way connected with your use of the portal, your submitted content, or your violation of these Terms and Conditions.',
+      'You agree to indemnify, defend, and hold harmless the Yamacraw Business Portal, its sponsors, administrators, and representatives from and against any claims, liabilities, damages, losses, and expenses, including reasonable legal fees, arising out of or in any way connected with your use of the portal, your submitted content, or your violation of these Terms and Conditions.',
     ],
   },
   {
@@ -244,7 +244,7 @@ export default function TermsPage() {
           className="mt-16 pt-8 border-t border-surface-200"
         >
           <p className="text-sm text-surface-400">
-            Yamacraw Business Portal — sponsored by the Office of Minister Zane Enrico Lightbourne.
+            Yamacraw Business Portal, sponsored by the Office of Minister Zane Enrico Lightbourne.
             These terms are effective as of March 2026.
           </p>
         </motion.div>

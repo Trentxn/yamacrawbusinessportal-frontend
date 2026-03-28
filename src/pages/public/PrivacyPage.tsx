@@ -139,7 +139,7 @@ export default function PrivacyPage() {
                   'Full name',
                   'Email address',
                   'Phone number',
-                  'Password (stored as a bcrypt hash — never in plain text)',
+                  'Password (stored as a bcrypt hash, never in plain text)',
                 ]} />
               </div>
 
@@ -228,7 +228,7 @@ export default function PrivacyPage() {
             <p>Your data may be shared in the following limited circumstances:</p>
             <Ul items={[
               'With portal administrators, solely for the purpose of content moderation and support',
-              'With the business owner who receives an inquiry — the sender\'s name and contact details are shared so the business can respond',
+              'With the business owner who receives an inquiry. The sender\'s name and contact details are shared so the business can respond',
               'With Resend (our transactional email provider), to deliver account verification and notification emails',
               'With our hosting infrastructure provider, as required to operate the service',
               'With law enforcement or regulatory bodies, if required to do so under the laws of the Commonwealth of The Bahamas',
@@ -259,10 +259,10 @@ export default function PrivacyPage() {
           <Section title="8. Your Rights">
             <p>You have the following rights in relation to your personal data:</p>
             <Ul items={[
-              'Right of access — you may request a copy of the personal data we hold about you',
-              'Right to rectification — you may request correction of inaccurate or incomplete data',
-              'Right to erasure — you may request deletion of your account and associated personal data',
-              'Right to withdraw consent — where processing is based on consent, you may withdraw it at any time',
+              'Right of access: you may request a copy of the personal data we hold about you',
+              'Right to rectification: you may request correction of inaccurate or incomplete data',
+              'Right to erasure: you may request deletion of your account and associated personal data',
+              'Right to withdraw consent: where processing is based on consent, you may withdraw it at any time',
             ]} />
             <p>
               To exercise any of these rights, send a written request to{' '}

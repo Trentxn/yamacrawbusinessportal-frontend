@@ -139,7 +139,7 @@ function ProfileSection() {
 
         {user && (
           <>
-            {/* Email — read-only */}
+            {/* Email - read-only */}
             <div>
               <label className="mb-1.5 block text-sm font-medium text-surface-700">
                 Email address

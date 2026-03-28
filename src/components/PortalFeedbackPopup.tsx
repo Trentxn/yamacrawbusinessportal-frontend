@@ -56,7 +56,7 @@ export default function PortalFeedbackPopup() {
         setTimeout(() => setVisible(false), 300)
       }, 2000)
     } catch {
-      // Silently fail — feedback is non-critical
+      // Silently fail - feedback is non-critical
     } finally {
       setSubmitting(false)
     }

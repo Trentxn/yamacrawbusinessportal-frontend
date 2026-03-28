@@ -218,7 +218,7 @@ export default function ReceivedInquiries() {
                         {/* Business name */}
                         <td className="px-5 py-4">
                           <p className="text-surface-700 text-sm">
-                            {inquiry.businessName || '—'}
+                            {inquiry.businessName || '-'}
                           </p>
                         </td>
 

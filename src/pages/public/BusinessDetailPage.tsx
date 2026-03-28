@@ -895,7 +895,7 @@ export default function BusinessDetailPage() {
               </motion.div>
             )}
 
-            {/* Inquiry Form — hidden for admin/system_admin roles */}
+            {/* Inquiry Form - hidden for admin/system_admin roles */}
             {(!user || (user.role !== 'admin' && user.role !== 'system_admin')) && (
               <InquiryForm business={business} />
             )}

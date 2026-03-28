@@ -467,10 +467,10 @@ export default function AdminBusinessDetail() {
             >
               <option value="">Select a reason...</option>
               <option value="Incomplete or inaccurate business information">Incomplete or inaccurate business information</option>
-              <option value="Description is too vague — please add services offered">Description is too vague — please add services offered</option>
+              <option value="Description is too vague - please add services offered">Description is too vague - please add services offered</option>
               <option value="Business does not appear to operate in the Yamacraw area">Business does not appear to operate in the Yamacraw area</option>
               <option value="Listing contains inappropriate or misleading content">Listing contains inappropriate or misleading content</option>
-              <option value="Duplicate listing — a similar listing already exists">Duplicate listing — a similar listing already exists</option>
+              <option value="Duplicate listing - a similar listing already exists">Duplicate listing - a similar listing already exists</option>
               <option value="Contact information appears invalid">Contact information appears invalid</option>
               <option value="__other__">Other (specify below)</option>
             </select>
