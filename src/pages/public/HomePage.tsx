@@ -383,7 +383,7 @@ export default function HomePage() {
                 <Link
                   key={cat.id}
                   to={`/directory/${cat.slug}`}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-surface-200 bg-white p-5 shadow-card transition-all hover:border-primary-200 hover:shadow-card-hover animate-[fadeInUp_0.4s_ease-out_both]"
+                  className="group flex flex-col items-center gap-3 rounded-xl border border-surface-200 bg-white p-5 shadow-card transition-all hover:border-primary-200 hover:shadow-card-hover animate-fade-in-up"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent-100 text-accent-600 transition-colors group-hover:bg-accent-400 group-hover:text-white">
