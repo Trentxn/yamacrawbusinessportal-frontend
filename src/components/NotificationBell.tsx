@@ -72,11 +72,19 @@ export default function NotificationBell() {
   useEffect(() => {
     if (open && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect()
+      const dropdownWidth = 320 // w-80
+      const screenWidth = window.innerWidth
+      const rightOffset = screenWidth - rect.right
+
+      // On mobile, if the dropdown would overflow, pin it with margin
+      const safeRight = Math.max(8, Math.min(rightOffset, screenWidth - dropdownWidth - 8))
+
       setDropdownStyle({
         position: 'fixed',
         top: rect.bottom + 8,
-        right: window.innerWidth - rect.right,
+        right: safeRight,
         zIndex: 9999,
+        maxWidth: `calc(100vw - 1rem)`,
       })
     }
   }, [open])

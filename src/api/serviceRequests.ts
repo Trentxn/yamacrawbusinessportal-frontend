@@ -23,13 +23,13 @@ export const serviceRequestsApi = {
     page?: number
     pageSize?: number
   }) {
-    return client.get<PaginatedResponse<ServiceRequest>>('/service-requests/received/', { params })
+    return client.get<PaginatedResponse<ServiceRequest>>('/service-requests/received', { params })
   },
 
   // Registered user: list sent inquiries
   listSent(params?: { page?: number; pageSize?: number }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<ServiceRequest>>('/users/me/inquiries/', {
+    return client.get<PaginatedResponse<ServiceRequest>>('/users/me/inquiries', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },

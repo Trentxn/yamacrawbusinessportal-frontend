@@ -39,13 +39,13 @@ export const reviewsApi = {
   },
 
   listMine() {
-    return client.get<Review[]>('/reviews/mine/')
+    return client.get<Review[]>('/reviews/mine')
   },
 
   // Business owner: reviews on my businesses
   listMyBusinessReviews(params?: { businessId?: string; page?: number; pageSize?: number }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<Review>>('/reviews/my-business-reviews/', {
+    return client.get<PaginatedResponse<Review>>('/reviews/my-business-reviews', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },
