@@ -103,10 +103,10 @@ export default function VerifyEmailPage() {
             Your email has been successfully verified. You can now sign in to your account.
           </p>
           <Link
-            to="/login"
+            to="/"
             className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-700"
           >
-            Continue to Sign in
+            Go to Homepage
           </Link>
         </>
       )}
