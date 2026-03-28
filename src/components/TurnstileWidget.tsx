@@ -1,6 +1,4 @@
-import { Turnstile } from '@marsidev/react-turnstile'
-import type { TurnstileInstance } from '@marsidev/react-turnstile'
-import { forwardRef, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useCallback } from 'react'
 
 const SITE_KEY = '0x4AAAAAAACxHB6tyAbHEoOVe'
 
@@ -14,31 +12,65 @@ interface TurnstileWidgetProps {
   onExpire?: () => void
 }
 
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (container: HTMLElement, options: Record<string, unknown>) => string
+      reset: (widgetId: string) => void
+      remove: (widgetId: string) => void
+    }
+  }
+}
+
 const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetProps>(
   ({ onSuccess, onError, onExpire }, ref) => {
-    const turnstileRef = useRef<TurnstileInstance>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
+    const widgetIdRef = useRef<string | null>(null)
+
+    const renderWidget = useCallback(() => {
+      if (!containerRef.current || !window.turnstile || widgetIdRef.current) return
+
+      widgetIdRef.current = window.turnstile.render(containerRef.current, {
+        sitekey: SITE_KEY,
+        theme: 'light',
+        callback: (token: string) => onSuccess(token),
+        'error-callback': () => onError?.(),
+        'expired-callback': () => onExpire?.(),
+      })
+    }, [onSuccess, onError, onExpire])
+
+    useEffect(() => {
+      // Wait for the turnstile script to load
+      if (window.turnstile) {
+        renderWidget()
+        return
+      }
+
+      const interval = setInterval(() => {
+        if (window.turnstile) {
+          clearInterval(interval)
+          renderWidget()
+        }
+      }, 100)
+
+      return () => {
+        clearInterval(interval)
+        if (widgetIdRef.current && window.turnstile) {
+          window.turnstile.remove(widgetIdRef.current)
+          widgetIdRef.current = null
+        }
+      }
+    }, [renderWidget])
 
     useImperativeHandle(ref, () => ({
-      reset: () => turnstileRef.current?.reset(),
+      reset: () => {
+        if (widgetIdRef.current && window.turnstile) {
+          window.turnstile.reset(widgetIdRef.current)
+        }
+      },
     }))
 
-    if (!SITE_KEY) return null
-
-    return (
-      <div className="flex justify-center">
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={SITE_KEY}
-          onSuccess={onSuccess}
-          onError={onError}
-          onExpire={onExpire}
-          options={{
-            theme: 'light',
-            size: 'normal',
-          }}
-        />
-      </div>
-    )
+    return <div ref={containerRef} className="flex justify-center" />
   }
 )
 
