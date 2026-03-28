@@ -72,20 +72,27 @@ export default function NotificationBell() {
   useEffect(() => {
     if (open && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect()
-      const dropdownWidth = 320 // w-80
       const screenWidth = window.innerWidth
-      const rightOffset = screenWidth - rect.right
 
-      // On mobile, if the dropdown would overflow, pin it with margin
-      const safeRight = Math.max(8, Math.min(rightOffset, screenWidth - dropdownWidth - 8))
-
-      setDropdownStyle({
-        position: 'fixed',
-        top: rect.bottom + 8,
-        right: safeRight,
-        zIndex: 9999,
-        maxWidth: `calc(100vw - 1rem)`,
-      })
+      if (screenWidth < 480) {
+        // Mobile: pin to right edge of screen with 8px margin, fit within viewport
+        setDropdownStyle({
+          position: 'fixed',
+          top: rect.bottom + 8,
+          right: 8,
+          zIndex: 9999,
+          width: Math.min(320, screenWidth - 16),
+        })
+      } else {
+        // Larger screens: align right edge of dropdown with right edge of bell button
+        setDropdownStyle({
+          position: 'fixed',
+          top: rect.bottom + 8,
+          right: screenWidth - rect.right,
+          zIndex: 9999,
+          width: 320,
+        })
+      }
     }
   }, [open])
 
@@ -106,7 +113,7 @@ export default function NotificationBell() {
       </button>
 
       {open && (
-        <div style={dropdownStyle} className="w-80 rounded-xl border border-surface-200 bg-white shadow-lg overflow-hidden">
+        <div style={dropdownStyle} className="rounded-xl border border-surface-200 bg-white shadow-lg overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-surface-100 px-4 py-3">
             <span className="text-sm font-semibold text-surface-800">Notifications</span>

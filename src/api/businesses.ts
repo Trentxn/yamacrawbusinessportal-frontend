@@ -63,7 +63,7 @@ export const businessesApi = {
   },
 
   getMine() {
-    return client.get<BusinessListItem[]>('/businesses/mine/')
+    return client.get<BusinessListItem[]>('/businesses/mine')
   },
 
   create(data: BusinessCreateData) {
