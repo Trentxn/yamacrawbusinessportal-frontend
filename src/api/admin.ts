@@ -25,7 +25,10 @@ export const adminApi = {
 
   // Moderation
   listPending(params?: { page?: number; pageSize?: number }) {
-    return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses/pending', { params })
+    const { pageSize, ...rest } = params || {}
+    return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses/pending', {
+      params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
+    })
   },
 
   getBusinessDetail(id: string) {
@@ -59,7 +62,10 @@ export const adminApi = {
     page?: number
     pageSize?: number
   }) {
-    return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses', { params })
+    const { pageSize, ...rest } = params || {}
+    return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses', {
+      params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
+    })
   },
 
   // Users (admin-level: can only change roles between public_user and business_owner)
@@ -101,7 +107,10 @@ export const adminApi = {
 
   // Flags
   listFlags(params?: { page?: number; pageSize?: number }) {
-    return client.get<PaginatedResponse<ModerationFlag>>('/admin/flags', { params })
+    const { pageSize, ...rest } = params || {}
+    return client.get<PaginatedResponse<ModerationFlag>>('/admin/flags', {
+      params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
+    })
   },
 
   resolveFlag(id: string, data: { actionTaken: string; resolutionNote?: string }) {
@@ -110,7 +119,10 @@ export const adminApi = {
 
   // Service requests
   listAllInquiries(params?: { page?: number; pageSize?: number; status?: string }) {
-    return client.get<PaginatedResponse<import('./types').ServiceRequest>>('/admin/service-requests', { params })
+    const { pageSize, ...rest } = params || {}
+    return client.get<PaginatedResponse<import('./types').ServiceRequest>>('/admin/service-requests', {
+      params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
+    })
   },
 
   // Reviews

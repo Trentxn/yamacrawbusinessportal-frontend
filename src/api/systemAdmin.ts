@@ -29,7 +29,10 @@ export const systemAdminApi = {
     status?: string
     search?: string
   }) {
-    return client.get<PaginatedResponse<User>>('/system-admin/users', { params })
+    const { pageSize, ...rest } = params || {}
+    return client.get<PaginatedResponse<User>>('/system-admin/users', {
+      params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
+    })
   },
 
   getUser(id: string) {
@@ -60,7 +63,10 @@ export const systemAdminApi = {
     dateFrom?: string
     dateTo?: string
   }) {
-    return client.get<PaginatedResponse<AuditLog>>('/system-admin/audit-logs', { params })
+    const { pageSize, ...rest } = params || {}
+    return client.get<PaginatedResponse<AuditLog>>('/system-admin/audit-logs', {
+      params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
+    })
   },
 
   exportAuditLogs(params?: {

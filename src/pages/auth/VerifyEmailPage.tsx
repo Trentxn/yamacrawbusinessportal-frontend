@@ -46,10 +46,11 @@ export default function VerifyEmailPage() {
         if (!cancelled) setState('success')
       } catch (err) {
         if (cancelled) return
-        const axiosErr = err as AxiosError<{ message?: string }>
+        const axiosErr = err as AxiosError<{ message?: string; detail?: string }>
         setState('error')
         setErrorMessage(
-          axiosErr.response?.data?.message ||
+          axiosErr.response?.data?.detail ||
+            axiosErr.response?.data?.message ||
             'Verification failed. The link may have expired or already been used.'
         )
       }
@@ -68,9 +69,11 @@ export default function VerifyEmailPage() {
       await authApi.resendVerification(data.email)
       setResendSuccess(true)
     } catch (err) {
-      const axiosErr = err as AxiosError<{ message?: string }>
+      const axiosErr = err as AxiosError<{ message?: string; detail?: string }>
       setResendError(
-        axiosErr.response?.data?.message || 'Failed to resend verification email. Please try again.'
+        axiosErr.response?.data?.detail ||
+          axiosErr.response?.data?.message ||
+          'Failed to resend verification email. Please try again.'
       )
     }
   }

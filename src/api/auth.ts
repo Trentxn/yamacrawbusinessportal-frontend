@@ -13,18 +13,13 @@ export const authApi = {
     lastName: string
     role: 'public_user' | 'business_owner'
     tosAccepted: boolean
+    captchaToken?: string
   }) {
     return client.post('/auth/register', data)
   },
 
   logout() {
     return client.post('/auth/logout')
-  },
-
-  refresh(refreshToken: string) {
-    return client.post<AuthResponse>('/auth/refresh', {
-      refreshToken,
-    })
   },
 
   verifyEmail(token: string) {

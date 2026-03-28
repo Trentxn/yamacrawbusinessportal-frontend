@@ -80,10 +80,10 @@ function ProfileSection() {
       queryClient.invalidateQueries({ queryKey: ['me'] })
       setBanner({ type: 'success', message: 'Profile updated successfully.' })
     },
-    onError: (err: AxiosError<{ message?: string }>) => {
+    onError: (err: AxiosError<{ message?: string; detail?: string }>) => {
       setBanner({
         type: 'error',
-        message: err.response?.data?.message ?? 'Failed to update profile. Please try again.',
+        message: err.response?.data?.detail ?? err.response?.data?.message ?? 'Failed to update profile. Please try again.',
       })
     },
   })
@@ -244,10 +244,10 @@ function ChangePasswordSection() {
       setConfirmPassword('')
       setBanner({ type: 'success', message: 'Password changed successfully.' })
     },
-    onError: (err: AxiosError<{ message?: string }>) => {
+    onError: (err: AxiosError<{ message?: string; detail?: string }>) => {
       setBanner({
         type: 'error',
-        message: err.response?.data?.message ?? 'Failed to change password. Please try again.',
+        message: err.response?.data?.detail ?? err.response?.data?.message ?? 'Failed to change password. Please try again.',
       })
     },
   })

@@ -81,7 +81,7 @@ export default function UserManagement() {
       resetForm()
     },
     onError: (err: any) => {
-      setFormError(err?.response?.data?.message || 'Failed to create user.')
+      setFormError(err?.response?.data?.detail || err?.response?.data?.message || 'Failed to create user.')
     },
   })
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
@@ -31,6 +31,8 @@ import { serviceRequestsApi } from '@/api/serviceRequests'
 import { reviewsApi } from '@/api/reviews'
 import type { Review } from '@/api/reviews'
 import { useAuth } from '@/contexts/AuthContext'
+import TurnstileWidget from '@/components/TurnstileWidget'
+import type { TurnstileWidgetRef } from '@/components/TurnstileWidget'
 import type { Business } from '@/api/types'
 
 // --- Animation variants ---
@@ -140,6 +142,8 @@ function NotFound() {
 function InquiryForm({ business }: { business: Business }) {
   const { user } = useAuth()
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const turnstileRef = useRef<TurnstileWidgetRef>(null)
 
   const {
     register,
@@ -158,16 +162,20 @@ function InquiryForm({ business }: { business: Business }) {
   })
 
   const mutation = useMutation({
-    mutationFn: (data: InquiryFormData) =>
-      serviceRequestsApi.create({
+    mutationFn: (data: InquiryFormData) => {
+      if (!captchaToken) {
+        return Promise.reject(new Error('Please complete the CAPTCHA verification.'))
+      }
+      return serviceRequestsApi.create({
         businessId: business.id,
         senderName: data.senderName,
         senderEmail: data.senderEmail,
         senderPhone: data.senderPhone || null,
         subject: data.subject,
         message: data.message,
-        turnstileToken: '__skip__',
-      }),
+        captchaToken,
+      })
+    },
     onSuccess: () => {
       setToast({ type: 'success', message: 'Your inquiry has been sent.' })
       reset({
@@ -177,9 +185,14 @@ function InquiryForm({ business }: { business: Business }) {
         subject: '',
         message: '',
       })
+      turnstileRef.current?.reset()
+      setCaptchaToken('')
     },
-    onError: () => {
-      setToast({ type: 'error', message: 'Failed to send inquiry. Please try again.' })
+    onError: (err) => {
+      const message = err instanceof Error ? err.message : 'Failed to send inquiry. Please try again.'
+      setToast({ type: 'error', message })
+      turnstileRef.current?.reset()
+      setCaptchaToken('')
     },
   })
 
@@ -258,6 +271,13 @@ function InquiryForm({ business }: { business: Business }) {
           />
           {errors.message && <p className="mt-1 text-xs text-red-500">{errors.message.message}</p>}
         </div>
+
+        <TurnstileWidget
+          ref={turnstileRef}
+          onSuccess={setCaptchaToken}
+          onError={() => setCaptchaToken('')}
+          onExpire={() => setCaptchaToken('')}
+        />
 
         <button
           type="submit"

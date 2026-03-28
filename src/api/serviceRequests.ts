@@ -8,7 +8,7 @@ export interface InquiryCreateData {
   senderPhone?: string | null
   subject: string
   message: string
-  turnstileToken: string
+  captchaToken: string
 }
 
 export const serviceRequestsApi = {
@@ -28,7 +28,10 @@ export const serviceRequestsApi = {
 
   // Registered user: list sent inquiries
   listSent(params?: { page?: number; pageSize?: number }) {
-    return client.get<PaginatedResponse<ServiceRequest>>('/users/me/inquiries', { params })
+    const { pageSize, ...rest } = params || {}
+    return client.get<PaginatedResponse<ServiceRequest>>('/users/me/inquiries', {
+      params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
+    })
   },
 
   getById(id: string) {
