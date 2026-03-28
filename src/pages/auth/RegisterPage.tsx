@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,6 +6,8 @@ import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, Loader2, Mail, Lock, User, Check, X, Search, Store, HardHat } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import TurnstileWidget from '@/components/TurnstileWidget'
+import type { TurnstileWidgetRef } from '@/components/TurnstileWidget'
 import type { AxiosError } from 'axios'
 
 const passwordRequirements = [
@@ -49,6 +51,8 @@ export default function RegisterPage() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [serverError, setServerError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const turnstileRef = useRef<TurnstileWidgetRef>(null)
 
   const {
     register,
@@ -66,6 +70,10 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterForm) => {
     setServerError('')
+    if (!captchaToken) {
+      setServerError('Please complete the CAPTCHA verification.')
+      return
+    }
     try {
       await authRegister({
         email: data.email,
@@ -74,6 +82,7 @@ export default function RegisterPage() {
         lastName: data.lastName,
         role: data.role === 'contractor' ? 'business_owner' : data.role,
         tosAccepted: data.tosAccepted,
+        captchaToken,
       })
       setSuccess(true)
     } catch (err) {
@@ -81,6 +90,8 @@ export default function RegisterPage() {
       setServerError(
         axiosErr.response?.data?.message || 'Registration failed. Please try again.'
       )
+      turnstileRef.current?.reset()
+      setCaptchaToken('')
     }
   }
 
@@ -349,6 +360,14 @@ export default function RegisterPage() {
             <p className="mt-1 text-sm text-red-600">{errors.tosAccepted.message}</p>
           )}
         </div>
+
+        {/* CAPTCHA */}
+        <TurnstileWidget
+          ref={turnstileRef}
+          onSuccess={setCaptchaToken}
+          onError={() => setCaptchaToken('')}
+          onExpire={() => setCaptchaToken('')}
+        />
 
         {/* Submit */}
         <button

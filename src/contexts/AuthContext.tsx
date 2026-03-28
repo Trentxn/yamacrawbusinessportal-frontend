@@ -8,7 +8,7 @@ interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string, captchaToken?: string) => Promise<void>
   register: (data: RegisterData) => Promise<void>
   logout: () => Promise<void>
   updateUser: (user: User) => void
@@ -21,6 +21,7 @@ interface RegisterData {
   lastName: string
   role: 'public_user' | 'business_owner'
   tosAccepted: boolean
+  captchaToken?: string
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -47,8 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = useCallback(async (email: string, password: string) => {
-    const { data } = await client.post('/auth/login', { email, password })
+  const login = useCallback(async (email: string, password: string, captchaToken?: string) => {
+    const { data } = await client.post('/auth/login', { email, password, captchaToken })
     localStorage.setItem('access_token', data.accessToken)
     localStorage.setItem('refresh_token', data.refreshToken)
     localStorage.setItem('user', JSON.stringify(data.user))
@@ -63,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       lastName: registerData.lastName,
       role: registerData.role,
       tosAccepted: registerData.tosAccepted,
+      captchaToken: registerData.captchaToken,
     })
   }, [])
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,6 +6,8 @@ import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import TurnstileWidget from '@/components/TurnstileWidget'
+import type { TurnstileWidgetRef } from '@/components/TurnstileWidget'
 import type { AxiosError } from 'axios'
 
 const loginSchema = z.object({
@@ -22,6 +24,8 @@ export default function LoginPage() {
   const location = useLocation()
   const [showPassword, setShowPassword] = useState(false)
   const [serverError, setServerError] = useState('')
+  const [captchaToken, setCaptchaToken] = useState('')
+  const turnstileRef = useRef<TurnstileWidgetRef>(null)
 
   const {
     register,
@@ -34,8 +38,12 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     setServerError('')
+    if (!captchaToken) {
+      setServerError('Please complete the CAPTCHA verification.')
+      return
+    }
     try {
-      await login(data.email, data.password)
+      await login(data.email, data.password, captchaToken)
 
       // Determine redirect based on location state or user role
       const from = (location.state as { from?: string })?.from
@@ -62,6 +70,8 @@ export default function LoginPage() {
       setServerError(
         axiosErr.response?.data?.message || 'Invalid email or password. Please try again.'
       )
+      turnstileRef.current?.reset()
+      setCaptchaToken('')
     }
   }
 
@@ -148,6 +158,14 @@ export default function LoginPage() {
             Forgot password?
           </Link>
         </div>
+
+        {/* CAPTCHA */}
+        <TurnstileWidget
+          ref={turnstileRef}
+          onSuccess={setCaptchaToken}
+          onError={() => setCaptchaToken('')}
+          onExpire={() => setCaptchaToken('')}
+        />
 
         {/* Submit */}
         <button

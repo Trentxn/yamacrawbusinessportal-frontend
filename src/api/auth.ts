@@ -31,8 +31,8 @@ export const authApi = {
     return client.post('/auth/verify-email', { token })
   },
 
-  forgotPassword(email: string) {
-    return client.post('/auth/forgot-password', { email })
+  forgotPassword(email: string, captchaToken?: string) {
+    return client.post('/auth/forgot-password', { email, captchaToken })
   },
 
   resetPassword(token: string, password: string) {
