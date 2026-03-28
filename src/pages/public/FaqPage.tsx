@@ -25,7 +25,7 @@ const faqs = [
   {
     question: 'How do I register as a contractor?',
     answer:
-      'The registration process for contractors is the same as for businesses. When creating your listing, select the appropriate trade or service category. Your listing will indicate that you offer contractor services so customers can find you easily.',
+      'The registration process for contractors is the same as for businesses. When creating your listing, select the "Contractor" option to indicate that you hold a government contract. Your listing will be tagged accordingly so residents can identify government contractors in the directory.',
   },
   {
     question: 'Is the portal free to use?',
@@ -70,7 +70,7 @@ const faqs = [
   {
     question: 'What is the difference between a business and a contractor?',
     answer:
-      'A business typically refers to an established enterprise with a fixed location or storefront, such as a restaurant or retail shop. A contractor is an individual or small operation offering specialized trade services like plumbing, electrical work, or carpentry. Both can be listed on the portal.',
+      'A business typically refers to a privately owned enterprise that offers goods or services to the public. A contractor is an individual or company that holds a government contract to carry out specific work or provide services on behalf of the government. Both can be listed on the portal.',
   },
   {
     question: 'How do I report an issue with a listing?',

@@ -62,6 +62,13 @@
   }
 }
 
+/* Force tsparticles canvas to be transparent on all devices (iOS Safari fix) */
+#hero-particles,
+#hero-particles canvas {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 /* Hero background animations */
 @keyframes heroBlob1 {
   0%, 100% { transform: translate(0, 0) scale(1); }

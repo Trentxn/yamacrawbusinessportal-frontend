@@ -172,6 +172,7 @@ function HeroBackground() {
   const particlesOptions: ISourceOptions = useMemo(
     () => ({
       fullScreen: { enable: false },
+      background: { color: 'transparent' },
       fpsLimit: 60,
       particles: {
         number: {
@@ -246,10 +247,7 @@ function HeroBackground() {
   )
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Base gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0A1628] via-primary-800 to-[#0D1F3C]" />
-
+    <div className="pointer-events-none absolute inset-0 overflow-hidden bg-gradient-to-br from-[#0A1628] via-primary-800 to-[#0D1F3C]">
       {/* Subtle radial glow behind particles */}
       <div
         className="absolute left-1/2 top-1/2 h-[140%] w-[140%] -translate-x-1/2 -translate-y-1/2 opacity-20"
@@ -266,6 +264,7 @@ function HeroBackground() {
             id="hero-particles"
             options={particlesOptions}
             className={`absolute inset-0 transition-opacity duration-1000 ${ready ? 'opacity-100' : 'opacity-0'}`}
+            style={{ background: 'transparent' }}
           />
         )}
       </div>
@@ -310,7 +309,7 @@ export default function HomePage() {
   return (
     <div className="bg-white">
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden bg-[#0A1628]">
         <HeroBackground />
 
         <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">

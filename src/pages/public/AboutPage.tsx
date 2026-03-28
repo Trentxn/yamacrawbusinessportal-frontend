@@ -64,9 +64,9 @@ export default function AboutPage() {
               Access
             </h3>
             <p className="mt-2 text-surface-600">
-              Whether you need a plumber, a caterer, or a contractor, the
-              portal puts the information you need at your fingertips:
-              operating hours, contact details, photos, and more.
+              Whether you need a local service, a caterer, or a government
+              contractor, the portal puts the information you need at your
+              fingertips: operating hours, contact details, photos, and more.
             </p>
           </div>
           <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-card">

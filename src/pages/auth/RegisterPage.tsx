@@ -184,12 +184,12 @@ export default function RegisterPage() {
             >
               <HardHat className="h-5 w-5" />
               <span className="font-medium">Contractor</span>
-              <span className="text-xs text-surface-400">Offer your services</span>
+              <span className="text-xs text-surface-400">Gov't contract holder</span>
             </button>
           </div>
           {selectedRole === 'contractor' && (
             <p className="mt-2 text-xs text-teal-600">
-              As a contractor, you can create listings for your trade or professional services. Your listings will appear in the contractor directory.
+              As a government contractor, you can create listings for the services you provide under government contract. Your listings will appear in the contractor directory.
             </p>
           )}
           {errors.role && <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>}
