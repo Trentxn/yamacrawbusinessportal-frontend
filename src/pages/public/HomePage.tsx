@@ -376,34 +376,39 @@ export default function HomePage() {
         </div>
 
         {categories ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {categories.map((cat: Category, i: number) => {
+          <motion.div
+            className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+          >
+            {categories.map((cat: Category) => {
               const Icon = getCategoryIcon(cat.icon)
               return (
-                <Link
-                  key={cat.id}
-                  to={`/directory/${cat.slug}`}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-surface-200 bg-white p-5 shadow-card transition-all hover:border-primary-200 hover:shadow-card-hover animate-fade-in-up"
-                  style={{ animationDelay: `${i * 60}ms` }}
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent-100 text-accent-600 transition-colors group-hover:bg-accent-400 group-hover:text-white">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <div className="text-center">
-                    <span className="block text-sm font-semibold text-surface-800">
-                      {cat.name}
-                    </span>
-                    {cat.businessCount !== undefined && (
-                      <span className="mt-0.5 block text-xs text-surface-400">
-                        {cat.businessCount}{' '}
-                        {cat.businessCount === 1 ? 'business' : 'businesses'}
+                <motion.div key={cat.id} variants={fadeUp}>
+                  <Link
+                    to={`/directory/${cat.slug}`}
+                    className="group flex flex-col items-center gap-3 rounded-xl border border-surface-200 bg-white p-5 shadow-card transition-all hover:border-primary-200 hover:shadow-card-hover h-full"
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent-100 text-accent-600 transition-colors group-hover:bg-accent-400 group-hover:text-white">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <div className="text-center">
+                      <span className="block text-sm font-semibold text-surface-800">
+                        {cat.name}
                       </span>
-                    )}
-                  </div>
-                </Link>
+                      {cat.businessCount !== undefined && (
+                        <span className="mt-0.5 block text-xs text-surface-400">
+                          {cat.businessCount}{' '}
+                          {cat.businessCount === 1 ? 'business' : 'businesses'}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                </motion.div>
               )
             })}
-          </div>
+          </motion.div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {Array.from({ length: 5 }).map((_, i) => (
