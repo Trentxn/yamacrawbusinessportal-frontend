@@ -2,8 +2,7 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { forwardRef, useImperativeHandle, useRef } from 'react'
 
-// Cloudflare test key (always passes) - replace with real key after testing
-const SITE_KEY = '1x00000000000000000000AA'
+const SITE_KEY = '0x4AAAAAAACxHB6tyAbHEoOVe'
 
 export interface TurnstileWidgetRef {
   reset: () => void
