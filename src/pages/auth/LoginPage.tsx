@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -21,7 +21,6 @@ type LoginForm = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
   const [showPassword, setShowPassword] = useState(false)
   const [serverError, setServerError] = useState('')
   const [captchaToken, setCaptchaToken] = useState('')
@@ -44,25 +43,6 @@ export default function LoginPage() {
     }
     try {
       await login(data.email, data.password, captchaToken)
-
-      // Determine redirect based on location state or user role
-      const from = (location.state as { from?: string })?.from
-      if (from) {
-        navigate(from, { replace: true })
-        return
-      }
-
-      // Role-based default redirect
-      const storedUser = localStorage.getItem('user')
-      if (storedUser) {
-        try {
-          const u = JSON.parse(storedUser)
-          if (u.role === 'system_admin') { navigate('/system', { replace: true }); return }
-          if (u.role === 'admin') { navigate('/admin', { replace: true }); return }
-          if (u.role === 'business_owner') { navigate('/dashboard', { replace: true }); return }
-          if (u.role === 'public_user') { navigate('/account', { replace: true }); return }
-        } catch { /* fall through */ }
-      }
 
       navigate('/', { replace: true })
     } catch (err) {
