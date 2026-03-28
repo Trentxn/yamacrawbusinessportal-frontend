@@ -66,9 +66,11 @@ export default function LoginPage() {
 
       navigate('/', { replace: true })
     } catch (err) {
-      const axiosErr = err as AxiosError<{ message?: string }>
+      const axiosErr = err as AxiosError<{ message?: string; detail?: string }>
       setServerError(
-        axiosErr.response?.data?.message || 'Invalid email or password. Please try again.'
+        axiosErr.response?.data?.detail ||
+          axiosErr.response?.data?.message ||
+          'Invalid email or password. Please try again.'
       )
       turnstileRef.current?.reset()
       setCaptchaToken('')

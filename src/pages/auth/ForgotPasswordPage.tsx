@@ -40,9 +40,10 @@ export default function ForgotPasswordPage() {
       await authApi.forgotPassword(data.email, captchaToken)
       setSuccess(true)
     } catch (err) {
-      const axiosErr = err as AxiosError<{ message?: string }>
+      const axiosErr = err as AxiosError<{ message?: string; detail?: string }>
       setServerError(
-        axiosErr.response?.data?.message ||
+        axiosErr.response?.data?.detail ||
+          axiosErr.response?.data?.message ||
           'Something went wrong. Please try again.'
       )
       turnstileRef.current?.reset()

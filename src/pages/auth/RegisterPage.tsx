@@ -86,9 +86,11 @@ export default function RegisterPage() {
       })
       setSuccess(true)
     } catch (err) {
-      const axiosErr = err as AxiosError<{ message?: string }>
+      const axiosErr = err as AxiosError<{ message?: string; detail?: string }>
       setServerError(
-        axiosErr.response?.data?.message || 'Registration failed. Please try again.'
+        axiosErr.response?.data?.detail ||
+          axiosErr.response?.data?.message ||
+          'Registration failed. Please try again.'
       )
       turnstileRef.current?.reset()
       setCaptchaToken('')
