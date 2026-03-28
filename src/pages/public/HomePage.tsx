@@ -29,6 +29,16 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.08 } },
 }
 
+const categoryFadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
+}
+
+const categoryStagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+}
+
 // --- Carousel ---
 
 function Carousel({ children }: { children: React.ReactNode[] }) {
@@ -379,13 +389,14 @@ export default function HomePage() {
           <motion.div
             className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
             initial="hidden"
-            animate="visible"
-            variants={stagger}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            variants={categoryStagger}
           >
             {categories.map((cat: Category) => {
               const Icon = getCategoryIcon(cat.icon)
               return (
-                <motion.div key={cat.id} variants={fadeUp}>
+                <motion.div key={cat.id} variants={categoryFadeUp}>
                   <Link
                     to={`/directory/${cat.slug}`}
                     className="group flex flex-col items-center gap-3 rounded-xl border border-surface-200 bg-white p-5 shadow-card transition-all hover:border-primary-200 hover:shadow-card-hover h-full"
