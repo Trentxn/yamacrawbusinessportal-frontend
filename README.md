@@ -1,73 +1,100 @@
-# React + TypeScript + Vite
+# Yamacraw Business Portal - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend application for the [Yamacraw Business Portal](https://yamacrawbusinessportal.com), a civic business directory connecting residents of the Yamacraw constituency in Nassau, The Bahamas with local businesses, government contractors, and service providers.
 
-Currently, two official plugins are available:
+Sponsored by the Office of Minister Zane Enrico Lightbourne, Member of Parliament for Yamacraw.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+- **React 19** with TypeScript
+- **Vite** for build tooling
+- **Tailwind CSS v4** for styling
+- **TanStack Query** for server state and caching
+- **React Router v7** for client-side routing
+- **React Hook Form** + **Zod** for form validation
+- **Framer Motion** for animations
+- **Axios** with JWT interceptor for API communication
+- **Cloudflare Turnstile** for CAPTCHA protection
+- **Lucide React** for icons
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+**Public**
+- Homepage with featured businesses, category browsing, and search
+- Business directory with filtering by category, type, and tags
+- Business detail pages with photo galleries, operating hours, and inquiry forms
+- About, FAQ, Terms of Service, Privacy Policy, and Contact pages
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**Registered Users**
+- Account registration with email verification
+- Inquiry tracking dashboard with status updates
+- Profile management
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**Business Owners**
+- Business listing creation and management (up to 5 listings)
+- Photo uploads with reordering and captions
+- Inquiry inbox with reply functionality
+- Dashboard with listing stats and profile completeness
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**Admin Portal**
+- Listing moderation queue (approve, reject, suspend)
+- Category management
+- Inquiry oversight and flag moderation
+- Portal statistics dashboard
+- User management and audit logs (system admin)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+
+### Development
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The dev server starts at `http://localhost:5173`. Set `VITE_API_BASE_URL` in a `.env` file to point to the API (defaults to `/api`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Build
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
 ```
+
+Output goes to `dist/`.
+
+### Docker
+
+The frontend is containerized and served via nginx. See `docker-compose.yml` for the full stack setup including the API, PostgreSQL, and nginx reverse proxy.
+
+```bash
+docker compose up --build
+```
+
+This starts the full stack at `http://localhost:8080`.
+
+## Project Structure
+
+```
+src/
+  api/          # API client, endpoint modules, TypeScript types
+  components/   # Reusable UI components
+  contexts/     # React context providers (Auth, Notifications)
+  hooks/        # Custom hooks
+  layouts/      # Page layout shells (Public, Dashboard, Admin, etc.)
+  pages/        # Route pages organized by section
+  styles/       # Global CSS and Tailwind theme
+  utils/        # Formatters, validators, helpers
+```
+
+## Related
+
+- [yamacrawbusinessportal-api](https://github.com/yamacrawbusinessportal/yamacrawbusinessportal-api) - Backend API
+
+## License
+
+Private. All rights reserved.
