@@ -43,15 +43,17 @@ export default function LoginPage() {
     }
     try {
       await login(data.email, data.password, captchaToken)
-
       navigate('/', { replace: true })
     } catch (err) {
-      const axiosErr = err as AxiosError<{ message?: string; detail?: string }>
-      setServerError(
-        axiosErr.response?.data?.detail ||
-          axiosErr.response?.data?.message ||
-          'Invalid email or password. Please try again.'
-      )
+      const axiosErr = err as AxiosError<{ message?: string; detail?: string | string[] }>
+      const detail = axiosErr.response?.data?.detail
+      const message =
+        typeof detail === 'string'
+          ? detail
+          : Array.isArray(detail)
+            ? 'Please check your input and try again.'
+            : axiosErr.response?.data?.message || 'Invalid email or password. Please try again.'
+      setServerError(message)
       turnstileRef.current?.reset()
       setCaptchaToken('')
     }

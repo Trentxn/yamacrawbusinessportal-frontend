@@ -50,6 +50,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string, captchaToken?: string) => {
     const { data } = await client.post('/auth/login', { email, password, captchaToken })
+    if (!data?.accessToken || !data?.user) {
+      throw new Error('Invalid response from server. Please try again.')
+    }
     localStorage.setItem('access_token', data.accessToken)
     localStorage.setItem('refresh_token', data.refreshToken)
     localStorage.setItem('user', JSON.stringify(data.user))

@@ -367,7 +367,7 @@ export default function HomePage() {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
+          viewport={{ once: true, amount: 0.05 }}
           variants={stagger}
         >
           <motion.div variants={fadeUp} className="mb-12 text-center">
@@ -434,7 +434,7 @@ export default function HomePage() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: '-60px' }}
+            viewport={{ once: true, amount: 0.05 }}
             variants={stagger}
           >
             <motion.div
@@ -579,7 +579,7 @@ export default function HomePage() {
             <motion.div
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={{ once: true, amount: 0.05 }}
               variants={stagger}
             >
               <motion.div
@@ -727,7 +727,7 @@ export default function HomePage() {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
+          viewport={{ once: true, amount: 0.05 }}
           variants={fadeUp}
           className="mx-auto max-w-3xl text-center"
         >
@@ -763,7 +763,7 @@ export default function HomePage() {
             <motion.div
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-60px' }}
+              viewport={{ once: true, amount: 0.05 }}
               variants={stagger}
             >
               <motion.div variants={fadeUp} className="mb-12 text-center">
@@ -830,7 +830,7 @@ export default function HomePage() {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
+          viewport={{ once: true, amount: 0.05 }}
           variants={fadeUp}
           className="relative mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 lg:px-8"
         >
