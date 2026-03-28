@@ -21,7 +21,7 @@ export default function PortalFeedbackModal({ onClose }: Props) {
     if (rating === 0 || submitting) return
     setSubmitting(true)
     try {
-      await client.post('/portal-feedback', {
+      await client.post('/portal-feedback/', {
         rating,
         comment: comment.trim() || undefined,
       })

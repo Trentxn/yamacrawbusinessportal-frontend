@@ -4,7 +4,7 @@ import type { Notification, PaginatedResponse } from './types'
 export const notificationsApi = {
   list(params?: { page?: number; pageSize?: number }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<Notification>>('/notifications', {
+    return client.get<PaginatedResponse<Notification>>('/notifications/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },

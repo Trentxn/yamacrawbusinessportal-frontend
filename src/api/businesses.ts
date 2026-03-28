@@ -45,7 +45,7 @@ export const businessesApi = {
     listingType?: ListingType
   }) {
     const { listingType, pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<BusinessListItem>>('/businesses', {
+    return client.get<PaginatedResponse<BusinessListItem>>('/businesses/', {
       params: {
         ...rest,
         ...(pageSize !== undefined && { page_size: pageSize }),
@@ -63,11 +63,11 @@ export const businessesApi = {
   },
 
   getMine() {
-    return client.get<BusinessListItem[]>('/businesses/mine')
+    return client.get<BusinessListItem[]>('/businesses/mine/')
   },
 
   create(data: BusinessCreateData) {
-    return client.post<Business>('/businesses', data)
+    return client.post<Business>('/businesses/', data)
   },
 
   update(id: string, data: BusinessUpdateData) {

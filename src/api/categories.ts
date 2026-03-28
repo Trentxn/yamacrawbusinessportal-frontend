@@ -3,7 +3,7 @@ import type { Category } from './types'
 
 export const categoriesApi = {
   list() {
-    return client.get<Category[]>('/categories')
+    return client.get<Category[]>('/categories/')
   },
 
   getBySlug(slug: string) {

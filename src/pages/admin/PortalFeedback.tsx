@@ -78,8 +78,8 @@ export default function PortalFeedback() {
     queryFn: () =>
       client
         .get<{ items: FeedbackEntry[]; total: number; page: number; pageSize: number; totalPages: number }>(
-          '/portal-feedback',
-          { params: { page, pageSize } },
+          '/portal-feedback/',
+          { params: { page, page_size: pageSize } },
         )
         .then((r) => r.data),
   })

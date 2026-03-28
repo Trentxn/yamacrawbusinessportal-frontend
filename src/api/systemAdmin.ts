@@ -30,7 +30,7 @@ export const systemAdminApi = {
     search?: string
   }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<User>>('/system-admin/users', {
+    return client.get<PaginatedResponse<User>>('/system-admin/users/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },
@@ -50,7 +50,7 @@ export const systemAdminApi = {
     lastName: string
     role: 'admin' | 'system_admin'
   }) {
-    return client.post<User>('/system-admin/users', data)
+    return client.post<User>('/system-admin/users/', data)
   },
 
   // Audit logs
@@ -64,7 +64,7 @@ export const systemAdminApi = {
     dateTo?: string
   }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<AuditLog>>('/system-admin/audit-logs', {
+    return client.get<PaginatedResponse<AuditLog>>('/system-admin/audit-logs/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },

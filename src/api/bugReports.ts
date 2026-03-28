@@ -20,12 +20,12 @@ export interface BugReport {
 
 export const bugReportsApi = {
   create(data: { subject: string; description: string; pageUrl?: string }) {
-    return client.post<BugReport>('/bug-reports', data)
+    return client.post<BugReport>('/bug-reports/', data)
   },
 
   list(params?: { status?: string; page?: number; pageSize?: number }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<BugReport>>('/bug-reports', {
+    return client.get<PaginatedResponse<BugReport>>('/bug-reports/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },

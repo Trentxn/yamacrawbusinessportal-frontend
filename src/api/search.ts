@@ -10,6 +10,6 @@ export const searchApi = {
     page?: number
     page_size?: number
   }) {
-    return client.get<PaginatedResponse<BusinessListItem>>('/search', { params })
+    return client.get<PaginatedResponse<BusinessListItem>>('/search/', { params })
   },
 }

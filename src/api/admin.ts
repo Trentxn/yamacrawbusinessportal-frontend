@@ -26,7 +26,7 @@ export const adminApi = {
   // Moderation
   listPending(params?: { page?: number; pageSize?: number }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses/pending', {
+    return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses/pending/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },
@@ -63,7 +63,7 @@ export const adminApi = {
     pageSize?: number
   }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses', {
+    return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },
@@ -76,7 +76,7 @@ export const adminApi = {
     status?: string
   }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<import('./types').User>>('/admin/users', {
+    return client.get<PaginatedResponse<import('./types').User>>('/admin/users/', {
       params: {
         ...rest,
         ...(pageSize !== undefined && { page_size: pageSize }),
@@ -90,11 +90,11 @@ export const adminApi = {
 
   // Categories
   listCategories() {
-    return client.get<Category[]>('/categories')
+    return client.get<Category[]>('/categories/')
   },
 
   createCategory(data: { name: string; description?: string; icon?: string; sortOrder?: number }) {
-    return client.post<Category>('/admin/categories', data)
+    return client.post<Category>('/admin/categories/', data)
   },
 
   updateCategory(id: string, data: { name?: string; description?: string; icon?: string; sortOrder?: number; isActive?: boolean }) {
@@ -108,7 +108,7 @@ export const adminApi = {
   // Flags
   listFlags(params?: { page?: number; pageSize?: number }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<ModerationFlag>>('/admin/flags', {
+    return client.get<PaginatedResponse<ModerationFlag>>('/admin/flags/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },
@@ -120,7 +120,7 @@ export const adminApi = {
   // Service requests
   listAllInquiries(params?: { page?: number; pageSize?: number; status?: string }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<import('./types').ServiceRequest>>('/admin/service-requests', {
+    return client.get<PaginatedResponse<import('./types').ServiceRequest>>('/admin/service-requests/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },
@@ -128,7 +128,7 @@ export const adminApi = {
   // Reviews
   listReviews(params?: { page?: number; pageSize?: number; status?: string; businessId?: string }) {
     const { pageSize, ...rest } = params || {}
-    return client.get<PaginatedResponse<import('./reviews').AdminReview>>('/admin/reviews', {
+    return client.get<PaginatedResponse<import('./reviews').AdminReview>>('/admin/reviews/', {
       params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
     })
   },

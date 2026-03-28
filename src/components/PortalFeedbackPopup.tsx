@@ -45,7 +45,7 @@ export default function PortalFeedbackPopup() {
     if (rating === 0 || submitting) return
     setSubmitting(true)
     try {
-      await client.post('/portal-feedback', {
+      await client.post('/portal-feedback/', {
         rating,
         comment: comment.trim() || undefined,
       })
