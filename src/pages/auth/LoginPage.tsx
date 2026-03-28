@@ -46,6 +46,7 @@ export default function LoginPage() {
       navigate('/', { replace: true })
     } catch (err) {
       const axiosErr = err as AxiosError<{ message?: string; detail?: string | string[] }>
+      const status = axiosErr.response?.status
       const detail = axiosErr.response?.data?.detail
       const message =
         typeof detail === 'string'
@@ -54,8 +55,12 @@ export default function LoginPage() {
             ? 'Please check your input and try again.'
             : axiosErr.response?.data?.message || 'Invalid email or password. Please try again.'
       setServerError(message)
-      turnstileRef.current?.reset()
-      setCaptchaToken('')
+
+      // Only reset captcha for 422/429 (validation/rate-limit) -- not for auth failures
+      if (status === 422 || status === 429) {
+        turnstileRef.current?.reset()
+        setCaptchaToken('')
+      }
     }
   }
 

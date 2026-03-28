@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useCallback } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 
 const SITE_KEY = '0x4AAAAAACxHB6tyAbHEoOVe'
 
@@ -26,41 +26,46 @@ const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetProps>(
   ({ onSuccess, onError, onExpire }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const widgetIdRef = useRef<string | null>(null)
+    const callbacksRef = useRef({ onSuccess, onError, onExpire })
 
-    const renderWidget = useCallback(() => {
-      if (!containerRef.current || !window.turnstile || widgetIdRef.current) return
-
-      widgetIdRef.current = window.turnstile.render(containerRef.current, {
-        sitekey: SITE_KEY,
-        theme: 'light',
-        callback: (token: string) => onSuccess(token),
-        'error-callback': () => onError?.(),
-        'expired-callback': () => onExpire?.(),
-      })
-    }, [onSuccess, onError, onExpire])
+    // Keep refs up to date without re-triggering the effect
+    callbacksRef.current = { onSuccess, onError, onExpire }
 
     useEffect(() => {
-      // Wait for the turnstile script to load
-      if (window.turnstile) {
-        renderWidget()
-        return
+      const container = containerRef.current
+      if (!container) return
+
+      const renderWidget = () => {
+        if (widgetIdRef.current || !window.turnstile) return
+
+        widgetIdRef.current = window.turnstile.render(container, {
+          sitekey: SITE_KEY,
+          theme: 'light',
+          callback: (token: string) => callbacksRef.current.onSuccess(token),
+          'error-callback': () => callbacksRef.current.onError?.(),
+          'expired-callback': () => callbacksRef.current.onExpire?.(),
+        })
       }
 
-      const interval = setInterval(() => {
-        if (window.turnstile) {
-          clearInterval(interval)
-          renderWidget()
-        }
-      }, 100)
+      if (window.turnstile) {
+        renderWidget()
+      } else {
+        const interval = setInterval(() => {
+          if (window.turnstile) {
+            clearInterval(interval)
+            renderWidget()
+          }
+        }, 100)
+        return () => clearInterval(interval)
+      }
 
       return () => {
-        clearInterval(interval)
         if (widgetIdRef.current && window.turnstile) {
           window.turnstile.remove(widgetIdRef.current)
           widgetIdRef.current = null
         }
       }
-    }, [renderWidget])
+    }, [])
 
     useImperativeHandle(ref, () => ({
       reset: () => {
