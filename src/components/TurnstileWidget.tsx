@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useCallback } from 'react'
 
-const SITE_KEY = '0x4AAAAAAACxHB6tyAbHEoOVe'
+const SITE_KEY = '0x4AAAAAACxHB6tyAbHEoOVe'
 
 export interface TurnstileWidgetRef {
   reset: () => void
