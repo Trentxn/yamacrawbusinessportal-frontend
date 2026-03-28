@@ -2,7 +2,7 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { forwardRef, useImperativeHandle, useRef } from 'react'
 
-const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || ''
+const SITE_KEY = '0x4AAAAAAACxDuxXgqwTr8jde'
 
 export interface TurnstileWidgetRef {
   reset: () => void
