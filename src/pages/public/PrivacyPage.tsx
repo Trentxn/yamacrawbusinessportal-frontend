@@ -247,7 +247,7 @@ export default function PrivacyPage() {
               { term: 'Business listings', detail: 'Retained for as long as the listing is active on the portal.' },
               { term: 'Inquiry messages', detail: 'Retained for as long as the associated accounts are active.' },
               { term: 'Server access logs', detail: 'Retained for 90 days, then automatically purged.' },
-              { term: 'Audit logs', detail: 'Retained for 1 year for security and compliance purposes.' },
+              { term: 'Audit logs', detail: 'Retained for 90 days (3 months) for security and compliance purposes, then automatically purged. Audit logs include your IP address and a record of actions taken on the portal.' },
             ]} />
             <p>
               When data is deleted, it is removed from active systems. Residual copies in automated
