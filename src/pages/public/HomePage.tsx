@@ -745,7 +745,7 @@ export default function HomePage() {
             The Yamacraw Business Portal exists to give local businesses the
             visibility they deserve and to make it easier for residents to find
             trusted services right in their neighborhood. Whether you run a
-            shop, offer a trade, or provide professional services -- this
+            shop, offer a trade, or provide professional services, this
             platform is for you.
           </p>
           <p className="mt-4 text-sm text-surface-400">
