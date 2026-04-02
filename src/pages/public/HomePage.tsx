@@ -18,6 +18,7 @@ import { businessesApi } from '@/api/businesses'
 import client from '@/api/client'
 import type { Category } from '@/api/types'
 import { getCategoryIcon } from '@/utils/categoryIcons'
+import { useAuth } from '@/contexts/AuthContext'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -279,6 +280,12 @@ function HeroBackground() {
 }
 
 export default function HomePage() {
+  const { user, isAuthenticated } = useAuth()
+
+  const listYourBusinessDest = isAuthenticated && user?.role === 'business_owner'
+    ? '/dashboard/listings/new'
+    : '/register'
+
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: () => categoriesApi.list().then((r) => r.data),
@@ -325,7 +332,10 @@ export default function HomePage() {
               >
                 Discover Yamacraw's
                 <br />
-                <span className="bg-gradient-to-r from-white via-accent-200 to-accent-400 bg-clip-text text-transparent">
+                <span
+                  className="bg-gradient-to-r from-white via-accent-200 to-accent-400 bg-clip-text text-transparent"
+                  style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                >
                   Local Businesses
                 </span>
               </motion.h1>
@@ -351,7 +361,7 @@ export default function HomePage() {
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <Link
-                  to="/register"
+                  to={listYourBusinessDest}
                   className="inline-flex items-center gap-2 rounded-xl border-2 border-white/20 bg-white/5 px-7 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/10"
                 >
                   List Your Business

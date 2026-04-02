@@ -6,6 +6,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import App from './App'
 import BugReportButton from '@/components/BugReportButton'
+import ScrollToTop from '@/components/ScrollToTop'
 import './styles/globals.css'
 
 const queryClient = new QueryClient({
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AuthProvider>
+            <ScrollToTop />
             <App />
             <BugReportButton />
           </AuthProvider>

@@ -11,7 +11,7 @@ export default function AboutPage() {
       {/* Minister section */}
       <div className="mt-10 flex flex-col items-center gap-8 rounded-2xl border border-surface-200 bg-white p-6 shadow-card sm:flex-row sm:items-start sm:p-8">
         <img
-          src="/images/zane.jpg"
+          src="/images/zane.jpeg"
           alt="Minister Zane Enrico Lightbourne"
           className="h-48 w-48 flex-shrink-0 rounded-xl object-cover shadow-md sm:h-56 sm:w-56"
         />

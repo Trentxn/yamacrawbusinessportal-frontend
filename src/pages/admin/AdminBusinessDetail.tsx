@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAdminBasePath } from '@/hooks/useAdminBasePath'
 import { motion } from 'framer-motion'
@@ -19,9 +19,12 @@ import {
   ShieldCheck,
   AlertTriangle,
   ExternalLink,
+  Trash2,
 } from 'lucide-react'
 import { adminApi } from '@/api/admin'
+import { systemAdminApi } from '@/api/systemAdmin'
 import ConfirmModal from '@/components/ConfirmModal'
+import { useAuth } from '@/contexts/AuthContext'
 import type { BusinessStatus } from '@/api/types'
 
 const statusConfig: Record<
@@ -61,11 +64,15 @@ const DAY_ORDER = [
 export default function AdminBusinessDetail() {
   const basePath = useAdminBasePath()
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { user: currentUser } = useAuth()
+  const isSystemAdmin = currentUser?.role === 'system_admin'
 
   const [showRejectModal, setShowRejectModal] = useState(false)
   const [showSuspendModal, setShowSuspendModal] = useState(false)
   const [showUnsuspendConfirm, setShowUnsuspendConfirm] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [reason, setReason] = useState('')
 
   const { data: business, isLoading, isError } = useQuery({
@@ -112,6 +119,14 @@ export default function AdminBusinessDetail() {
   const featureMutation = useMutation({
     mutationFn: (featured: boolean) => adminApi.featureBusiness(id!, featured),
     onSuccess: invalidate,
+  })
+
+  const deleteBusinessMutation = useMutation({
+    mutationFn: () => systemAdminApi.deleteBusiness(id!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'businesses'] })
+      navigate(`${basePath}/businesses`)
+    },
   })
 
   if (isLoading) {
@@ -224,6 +239,15 @@ export default function AdminBusinessDetail() {
             >
               <ShieldCheck className="h-4 w-4" />
               {unsuspendMutation.isPending ? 'Restoring...' : 'Unsuspend'}
+            </button>
+          )}
+          {isSystemAdmin && (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="inline-flex items-center gap-1.5 bg-red-700 text-white hover:bg-red-800 rounded-lg px-4 py-2 text-sm font-medium"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
             </button>
           )}
         </div>
@@ -516,6 +540,21 @@ export default function AdminBusinessDetail() {
         confirmLabel="Yes, unsuspend"
         confirmVariant="primary"
         loading={unsuspendMutation.isPending}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={() => {
+          deleteBusinessMutation.mutate()
+          setShowDeleteConfirm(false)
+        }}
+        title="Permanently Delete Business"
+        message={`Are you sure you want to permanently delete "${business.name}"? This will remove the listing and ALL associated data including photos, inquiries, reviews, and tags. This action CANNOT be undone.`}
+        confirmLabel="Yes, permanently delete"
+        confirmVariant="danger"
+        loading={deleteBusinessMutation.isPending}
       />
 
       {/* Suspend Modal */}

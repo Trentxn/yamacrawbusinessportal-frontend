@@ -69,6 +69,12 @@
   background-color: transparent !important;
 }
 
+/* Ensure gradient text works on iOS Safari */
+.bg-clip-text {
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
 /* Hero background animations */
 @keyframes heroBlob1 {
   0%, 100% { transform: translate(0, 0) scale(1); }

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Joyride } from 'react-joyride'
 import { useAuth } from '@/contexts/AuthContext'
+import { useAccountTour } from '@/hooks/useAccountTour'
 import NotificationBell from '@/components/NotificationBell'
 import {
   MessageSquare,
@@ -10,6 +12,11 @@ import {
   X,
   LogOut,
 } from 'lucide-react'
+
+const TOUR_KEYS: Record<string, string> = {
+  '/account/inquiries': 'account-inquiries',
+  '/account/profile': 'account-profile',
+}
 
 const allSidebarLinks = [
   { label: 'My Inquiries', to: '/account/inquiries', icon: MessageSquare, hideForRoles: ['admin', 'system_admin'] },
@@ -24,11 +31,33 @@ export default function AccountLayout() {
   )
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { run: tourRun, steps: tourSteps, handleEvent: tourHandler } = useAccountTour()
 
   const isActive = (path: string) => location.pathname.startsWith(path)
 
   return (
     <div className="flex h-screen font-sans">
+      <Joyride
+        steps={tourSteps}
+        run={tourRun}
+        onEvent={tourHandler}
+        continuous
+        options={{
+          buttons: ['back', 'close', 'primary', 'skip'],
+          showProgress: true,
+          overlayClickAction: 'next',
+          primaryColor: '#1B3A5C',
+          zIndex: 10000,
+        }}
+        locale={{
+          back: 'Back',
+          close: 'Close',
+          last: 'Got it!',
+          next: 'Next',
+          skip: 'Skip tour',
+        }}
+      />
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -39,6 +68,7 @@ export default function AccountLayout() {
 
       {/* Sidebar */}
       <aside
+        data-tour="account-sidebar"
         className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-primary-800 text-white transition-transform duration-200 lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
@@ -60,6 +90,7 @@ export default function AccountLayout() {
             <Link
               key={link.to}
               to={link.to}
+              data-tour={TOUR_KEYS[link.to]}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 isActive(link.to)
@@ -103,7 +134,9 @@ export default function AccountLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-3">
-            <NotificationBell />
+            <span data-tour="account-notifications">
+              <NotificationBell />
+            </span>
             {user && (
               <>
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white">

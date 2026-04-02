@@ -53,6 +53,14 @@ export const systemAdminApi = {
     return client.post<User>('/system-admin/users', data)
   },
 
+  deleteUser(id: string) {
+    return client.delete(`/system-admin/users/${id}`)
+  },
+
+  deleteBusiness(id: string) {
+    return client.delete(`/system-admin/businesses/${id}`)
+  },
+
   // Audit logs
   listAuditLogs(params?: {
     page?: number

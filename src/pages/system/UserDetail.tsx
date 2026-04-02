@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Check, X, Mail, Phone, Shield, Calendar, Clock } from 'lucide-react'
+import { ArrowLeft, Check, X, Mail, Phone, Shield, Calendar, Clock, Trash2 } from 'lucide-react'
 import { systemAdminApi } from '@/api/systemAdmin'
+import ConfirmModal from '@/components/ConfirmModal'
 import type { UserRole, UserStatus } from '@/api/types'
 
 const fadeIn = {
@@ -59,6 +60,7 @@ export default function UserDetail() {
 
   const [selectedRole, setSelectedRole] = useState<UserRole | ''>('')
   const [selectedStatus, setSelectedStatus] = useState<UserStatus | ''>('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -73,6 +75,14 @@ export default function UserDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['system', 'user', id] })
       queryClient.invalidateQueries({ queryKey: ['system', 'users'] })
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: () => systemAdminApi.deleteUser(id!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['system', 'users'] })
+      navigate('/system/users')
     },
   })
 
@@ -293,9 +303,52 @@ export default function UserDetail() {
                 </button>
               </div>
             </div>
+            {/* Delete User */}
+            <div className="border-t border-surface-200 pt-5">
+              <p className="text-xs font-medium text-red-600 mb-1.5">
+                Danger Zone
+              </p>
+              <p className="text-xs text-surface-500 mb-3">
+                Permanently delete this user and all their data including businesses, inquiries, reviews, and notifications. This action cannot be undone.
+              </p>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={user.role === 'system_admin'}
+                className="inline-flex items-center gap-1.5 bg-red-600 text-white hover:bg-red-700 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete User
+              </button>
+              {user.role === 'system_admin' && (
+                <p className="text-xs text-surface-400 mt-1.5">
+                  System admin accounts cannot be deleted. Demote the user first.
+                </p>
+              )}
+            </div>
           </div>
         </motion.div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={() => {
+          deleteMutation.mutate()
+          setShowDeleteConfirm(false)
+        }}
+        title="Permanently Delete User"
+        message={`Are you sure you want to permanently delete ${user.firstName} ${user.lastName} (${user.email})? This will remove their account and ALL associated data including businesses, inquiries, reviews, and notifications. This action CANNOT be undone.`}
+        confirmLabel="Yes, permanently delete"
+        confirmVariant="danger"
+        loading={deleteMutation.isPending}
+      />
+
+      {deleteMutation.isError && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 shadow-elevated">
+          Failed to delete user. {(deleteMutation.error as Error)?.message || 'Please try again.'}
+        </div>
+      )}
     </motion.div>
   )
 }

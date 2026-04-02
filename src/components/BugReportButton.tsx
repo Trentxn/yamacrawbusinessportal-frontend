@@ -36,7 +36,7 @@ export default function BugReportButton() {
     <>
       {/* Floating button */}
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => { setOpen(true); setSuccess(false); mutation.reset() }}
         title="Report a bug"
         className="fixed bottom-6 right-6 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-surface-700 text-white shadow-elevated transition-colors hover:bg-surface-800 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2"
       >

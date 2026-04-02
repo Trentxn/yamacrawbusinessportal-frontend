@@ -30,9 +30,9 @@ function Dl({ items }: { items: { term: string; detail: string }[] }) {
   return (
     <dl className="space-y-2.5">
       {items.map(({ term, detail }) => (
-        <div key={term} className="grid grid-cols-[minmax(11rem,auto)_1fr] gap-x-4">
+        <div key={term} className="flex flex-col gap-0.5 sm:grid sm:grid-cols-[minmax(11rem,auto)_1fr] sm:gap-x-4">
           <dt className="font-medium text-surface-800">{term}</dt>
-          <dd className="text-surface-600">{detail}</dd>
+          <dd className="text-surface-600 break-words">{detail}</dd>
         </div>
       ))}
     </dl>
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
           initial="hidden"
           animate="visible"
           variants={stagger}
-          className="bg-white rounded-xl border border-surface-200 shadow-card px-8 py-10 space-y-0"
+          className="bg-white rounded-xl border border-surface-200 shadow-card px-4 py-8 sm:px-8 sm:py-10 space-y-0"
         >
           {/* Intro */}
           <motion.p variants={fadeIn} className="text-surface-600 leading-relaxed text-[0.9375rem] border-b border-surface-200 pb-8 mb-8">

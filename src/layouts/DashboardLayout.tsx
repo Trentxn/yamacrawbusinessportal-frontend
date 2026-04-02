@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { Joyride } from 'react-joyride'
 import { useAuth } from '@/contexts/AuthContext'
 import { serviceRequestsApi } from '@/api/serviceRequests'
+import { useDashboardTour } from '@/hooks/useDashboardTour'
 import {
   LayoutDashboard,
   Store,
@@ -15,10 +17,18 @@ import {
 } from 'lucide-react'
 import NotificationBell from '@/components/NotificationBell'
 
+const TOUR_KEYS: Record<string, string> = {
+  '/dashboard/overview': 'overview',
+  '/dashboard/listings': 'listings',
+  '/dashboard/inquiries': 'inquiries',
+  '/dashboard/reviews': 'reviews',
+}
+
 export default function DashboardLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { run: tourRun, steps: tourSteps, handleEvent: tourHandler } = useDashboardTour()
 
   // Fetch count of open (unread) inquiries for the badge
   const { data: openInquiries } = useQuery({
@@ -46,6 +56,27 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen font-sans">
+      <Joyride
+        steps={tourSteps}
+        run={tourRun}
+        onEvent={tourHandler}
+        continuous
+        options={{
+          buttons: ['back', 'close', 'primary', 'skip'],
+          showProgress: true,
+          overlayClickAction: 'next',
+          primaryColor: '#1B3A5C',
+          zIndex: 10000,
+        }}
+        locale={{
+          back: 'Back',
+          close: 'Close',
+          last: 'Got it!',
+          next: 'Next',
+          skip: 'Skip tour',
+        }}
+      />
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -56,6 +87,7 @@ export default function DashboardLayout() {
 
       {/* Sidebar */}
       <aside
+        data-tour="sidebar"
         className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-primary-800 text-white transition-transform duration-200 lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
@@ -77,6 +109,7 @@ export default function DashboardLayout() {
             <Link
               key={link.to}
               to={link.to}
+              data-tour={TOUR_KEYS[link.to]}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 isActive(link.to)
@@ -99,6 +132,7 @@ export default function DashboardLayout() {
         <div className="border-t border-primary-700 p-3">
           <Link
             to="/"
+            data-tour="back-home"
             className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-primary-200 transition-colors hover:bg-primary-700/50 hover:text-white"
           >
             <Home className="h-5 w-5" />
@@ -125,7 +159,9 @@ export default function DashboardLayout() {
             <Menu className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-3">
-            <NotificationBell />
+            <span data-tour="notifications">
+              <NotificationBell />
+            </span>
             {user && (
               <>
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white">
