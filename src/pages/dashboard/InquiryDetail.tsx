@@ -56,7 +56,7 @@ function ToastBanner({ toast }: { toast: Toast }) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className={`fixed top-5 right-5 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated ${
+      className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-6 sm:top-6 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated ${
         toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
       }`}
     >
@@ -251,7 +251,7 @@ function MessageBubble({ msg, isOwner }: { msg: InquiryMessage; isOwner: boolean
           <span className={`text-xs font-semibold ${isOwner ? 'text-white/80' : 'text-surface-500'}`}>
             {msg.senderName}
           </span>
-          <span className={`text-[11px] ${isOwner ? 'text-white/50' : 'text-surface-400'}`}>
+          <span className={`text-xs ${isOwner ? 'text-white/50' : 'text-surface-400'}`}>
             {formatDate(msg.createdAt)}
           </span>
         </div>
@@ -552,6 +552,16 @@ export default function InquiryDetail() {
           </div>
         )}
 
+        {/* Notice: sender account no longer active */}
+        {inquiry.senderAccountStatus && inquiry.senderAccountStatus !== 'active' && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 mb-5 text-sm text-amber-700 flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>
+              The person who sent this inquiry is no longer reachable via the portal. Their account is currently <strong>{inquiry.senderAccountStatus}</strong>. Any replies you send here will not be delivered to them through the platform.
+            </span>
+          </div>
+        )}
+
         {isActive && expiry && (
           <div className={`rounded-lg border px-4 py-3 mb-5 text-sm flex items-center gap-2 ${
             isExpired
@@ -565,7 +575,7 @@ export default function InquiryDetail() {
 
         {/* Sender info strip */}
         <div className="bg-white border border-surface-200 rounded-xl shadow-card mb-5 px-5 py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-surface-400 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-surface-400 mb-3">
             Sender
           </p>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-surface-700">
@@ -615,7 +625,7 @@ export default function InquiryDetail() {
               <MessageBubble
                 key={msg.id}
                 msg={msg}
-                isOwner={msg.senderRole === 'business_owner' || msg.senderId === user?.id}
+                isOwner={msg.senderRole === 'business_owner' || msg.senderRole === 'contractor' || msg.senderId === user?.id}
               />
             ))}
             <div ref={messagesEndRef} />

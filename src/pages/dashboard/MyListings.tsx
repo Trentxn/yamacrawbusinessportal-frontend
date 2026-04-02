@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { businessesApi } from '@/api/businesses'
+import { useAuth } from '@/contexts/AuthContext'
 import ConfirmModal from '@/components/ConfirmModal'
 import type { BusinessListItem } from '@/api/businesses'
 import type { BusinessStatus } from '@/api/types'
@@ -48,6 +49,8 @@ const STATUS_CONFIG: Record<
 }
 
 export default function MyListings() {
+  const { user } = useAuth()
+  const isContractor = user?.role === 'contractor'
   const queryClient = useQueryClient()
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [confirmAction, setConfirmAction] = useState<{ type: 'archive' | 'reactivate'; listing: BusinessListItem } | null>(null)
@@ -133,7 +136,7 @@ export default function MyListings() {
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed top-6 right-6 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated transition-all ${
+          className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-6 sm:top-6 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated transition-all ${
             toast.type === 'success'
               ? 'bg-emerald-600 text-white'
               : 'bg-red-600 text-white'
@@ -151,9 +154,9 @@ export default function MyListings() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-surface-900">My Listings</h1>
+          <h1 className="text-2xl font-bold text-surface-900">{isContractor ? 'My Services' : 'My Listings'}</h1>
           <p className="mt-1 text-sm text-surface-500">
-            Manage your business listings on the portal.
+            {isContractor ? 'Manage your contract services on the portal.' : 'Manage your business listings on the portal.'}
           </p>
         </div>
         <Link
@@ -166,32 +169,34 @@ export default function MyListings() {
           onClick={(e) => { if (!canCreateNew) e.preventDefault() }}
         >
           <Plus className="h-4 w-4" />
-          New Listing
+          {isContractor ? 'New Service' : 'New Listing'}
         </Link>
       </div>
 
       {!canCreateNew && (
         <div className="mb-6 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-700">
-          You have reached the maximum of 5 listings.
+          {isContractor ? 'You have reached the maximum of 5 services.' : 'You have reached the maximum of 5 listings.'}
         </div>
       )}
 
       {/* Empty state */}
       {listings && listings.length === 0 ? (
-        <div className="bg-white border border-surface-200 rounded-xl p-12 text-center shadow-card">
+        <div className="bg-white border border-surface-200 rounded-xl p-6 sm:p-12 text-center shadow-card">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-50">
             <Store className="h-8 w-8 text-primary-600" />
           </div>
-          <h3 className="text-lg font-semibold text-surface-900 mb-2">No listings yet</h3>
+          <h3 className="text-lg font-semibold text-surface-900 mb-2">{isContractor ? 'No services yet' : 'No listings yet'}</h3>
           <p className="text-sm text-surface-500 mb-6 max-w-sm mx-auto">
-            Add your business to the Yamacraw directory so residents and visitors can find you.
+            {isContractor
+              ? 'Add your government contract services to the Yamacraw directory so residents can find and reach you.'
+              : 'Add your business to the Yamacraw directory so residents and visitors can find you.'}
           </p>
           <Link
             to="/dashboard/listings/new"
             className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-5 rounded-lg text-sm transition-colors"
           >
             <Plus className="h-4 w-4" />
-            Create your first listing
+            {isContractor ? 'Add your first service' : 'Create your first listing'}
           </Link>
         </div>
       ) : (

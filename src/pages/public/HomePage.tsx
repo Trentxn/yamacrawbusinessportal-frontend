@@ -163,11 +163,19 @@ function Carousel({ children }: { children: React.ReactNode[] }) {
 
 function HeroBackground() {
   const [ready, setReady] = useState(false)
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
       await loadSlim(engine)
-    }).then(() => setReady(true))
+    }).then(() => {
+      // Delay rendering particles until after the first paint to avoid stutter
+      requestAnimationFrame(() => {
+        setReady(true)
+        // Fade in after particles have had a frame to initialize
+        requestAnimationFrame(() => setVisible(true))
+      })
+    })
   }, [])
 
   const particlesOptions: ISourceOptions = useMemo(
@@ -177,7 +185,7 @@ function HeroBackground() {
       fpsLimit: 60,
       particles: {
         number: {
-          value: 80,
+          value: 60,
           density: { enable: true, width: 1200, height: 800 },
         },
         color: {
@@ -264,7 +272,7 @@ function HeroBackground() {
           <Particles
             id="hero-particles"
             options={particlesOptions}
-            className={`absolute inset-0 transition-opacity duration-1000 ${ready ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 transition-opacity duration-1000 ${visible ? 'opacity-100' : 'opacity-0'}`}
             style={{ background: 'transparent' }}
           />
         )}
@@ -282,7 +290,7 @@ function HeroBackground() {
 export default function HomePage() {
   const { user, isAuthenticated } = useAuth()
 
-  const listYourBusinessDest = isAuthenticated && user?.role === 'business_owner'
+  const listYourBusinessDest = isAuthenticated && (user?.role === 'business_owner' || user?.role === 'contractor')
     ? '/dashboard/listings/new'
     : '/register'
 
@@ -344,9 +352,9 @@ export default function HomePage() {
                 variants={fadeUp}
                 className="mt-6 max-w-xl text-lg leading-relaxed text-primary-200/90"
               >
-                Connecting residents with the shops, services, and enterprises
-                that make our community thrive. Find what you need, support
-                local.
+                Connecting residents with the businesses, contractors, and
+                service providers that make our community thrive. Find what
+                you need, support local.
               </motion.p>
 
               <motion.div
@@ -389,8 +397,8 @@ export default function HomePage() {
             Browse by Category
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-surface-500">
-            Find exactly what you need across all sectors of the Yamacraw
-            business community.
+            Find businesses, contractors, and services across the Yamacraw
+            community.
           </p>
         </div>
 
@@ -420,7 +428,7 @@ export default function HomePage() {
                       {cat.businessCount !== undefined && (
                         <span className="mt-0.5 block text-xs text-surface-400">
                           {cat.businessCount}{' '}
-                          {cat.businessCount === 1 ? 'business' : 'businesses'}
+                          {cat.businessCount === 1 ? 'listing' : 'listings'}
                         </span>
                       )}
                     </div>
@@ -751,11 +759,11 @@ export default function HomePage() {
             Strengthening Our Community
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-surface-500">
-            The Yamacraw Business Portal exists to give local businesses the
-            visibility they deserve and to make it easier for residents to find
-            trusted services right in their neighborhood. Whether you run a
-            shop, offer a trade, or provide professional services, this
-            platform is for you.
+            The Yamacraw Business Portal gives local businesses and contractors
+            the visibility they deserve, making it easier for residents to find
+            and reach out to trusted service providers in their neighbourhood.
+            Not sure who to call for a particular service? This portal keeps
+            everyone connected.
           </p>
           <p className="mt-4 text-sm text-surface-400">
             Sponsored by the Office of Minister Zane Enrico Lightbourne
@@ -854,8 +862,9 @@ export default function HomePage() {
             Ready to grow your business?
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-primary-200">
-            Join the Yamacraw Business Portal today. Create your listing, reach
-            new customers, and become part of a thriving local directory.
+            Join the Yamacraw Business Portal today. Whether you're a business
+            or a contractor, create your listing, reach new customers, and
+            become part of a thriving local directory.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link

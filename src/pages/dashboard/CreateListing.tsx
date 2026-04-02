@@ -77,6 +77,7 @@ const sectionTitle = 'text-lg font-semibold text-surface-900 mb-4'
 export default function CreateListing() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const isContractor = user?.role === 'contractor'
   const [tagInput, setTagInput] = useState('')
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [logoUploading, setLogoUploading] = useState(false)
@@ -286,7 +287,7 @@ export default function CreateListing() {
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed top-6 right-6 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated ${
+          className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-6 sm:top-6 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated ${
             toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
           }`}
         >
@@ -304,7 +305,7 @@ export default function CreateListing() {
           <ArrowLeft className="h-4 w-4" />
           Back to listings
         </Link>
-        <h1 className="text-2xl font-bold text-surface-900">Create New Listing</h1>
+        <h1 className="text-2xl font-bold text-surface-900">{isContractor ? 'Add New Service' : 'Create New Listing'}</h1>
         <p className="mt-1 text-sm text-surface-500">
           Add your business to the Yamacraw directory.
         </p>

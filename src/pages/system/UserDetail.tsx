@@ -20,6 +20,7 @@ const roleBadge: Record<UserRole, string> = {
   system_admin: 'bg-purple-100 text-purple-700',
   admin: 'bg-blue-100 text-blue-700',
   business_owner: 'bg-amber-100 text-amber-700',
+  contractor: 'bg-teal-100 text-teal-700',
   public_user: 'bg-surface-100 text-surface-600',
 }
 
@@ -27,6 +28,7 @@ const roleLabel: Record<UserRole, string> = {
   system_admin: 'System Admin',
   admin: 'Admin',
   business_owner: 'Business Owner',
+  contractor: 'Contractor',
   public_user: 'Public User',
 }
 
@@ -44,7 +46,7 @@ const statusLabel: Record<UserStatus, string> = {
   pending_verification: 'Pending Verification',
 }
 
-const allRoles: UserRole[] = ['system_admin', 'admin', 'business_owner', 'public_user']
+const allRoles: UserRole[] = ['system_admin', 'admin', 'business_owner', 'contractor', 'public_user']
 const allStatuses: UserStatus[] = ['active', 'inactive', 'suspended', 'pending_verification']
 
 export default function UserDetail() {

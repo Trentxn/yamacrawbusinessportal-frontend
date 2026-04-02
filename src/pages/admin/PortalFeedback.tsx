@@ -237,13 +237,13 @@ export default function PortalFeedback() {
                       <div className="flex items-center gap-2">
                         <StarRating rating={entry.rating} />
                         {entry.isFeatured && (
-                          <span className="inline-flex items-center gap-0.5 rounded-full bg-accent-100 px-1.5 py-0.5 text-[10px] font-semibold text-accent-700">
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-accent-100 px-1.5 py-0.5 text-xs font-semibold text-accent-700">
                             <Sparkles className="h-2.5 w-2.5" />
                             Featured
                           </span>
                         )}
                         {entry.isHidden && (
-                          <span className="inline-flex items-center gap-0.5 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-semibold text-red-700">
                             Hidden
                           </span>
                         )}
@@ -266,7 +266,7 @@ export default function PortalFeedback() {
                           onClick={() => featureMutation.mutate(entry.id)}
                           disabled={entry.isHidden}
                           title={entry.isFeatured ? 'Remove from homepage' : 'Feature on homepage'}
-                          className={`rounded-lg p-1.5 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                          className={`rounded-lg p-2.5 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
                             entry.isFeatured
                               ? 'bg-accent-100 text-accent-600 hover:bg-accent-200'
                               : 'text-surface-400 hover:bg-surface-100 hover:text-accent-600'
@@ -277,7 +277,7 @@ export default function PortalFeedback() {
                         <button
                           onClick={() => hideMutation.mutate(entry.id)}
                           title={entry.isHidden ? 'Unhide feedback' : 'Hide feedback'}
-                          className={`rounded-lg p-1.5 text-xs transition-colors ${
+                          className={`rounded-lg p-2.5 text-xs transition-colors ${
                             entry.isHidden
                               ? 'bg-red-100 text-red-600 hover:bg-red-200'
                               : 'text-surface-400 hover:bg-surface-100 hover:text-red-600'

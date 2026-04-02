@@ -59,7 +59,7 @@ export default function ModerationQueue() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-xl border border-surface-200 bg-white shadow-card p-12 text-center">
+          <div className="rounded-xl border border-surface-200 bg-white shadow-card p-6 sm:p-12 text-center">
             <Inbox className="h-12 w-12 text-surface-300 mx-auto mb-3" />
             <p className="text-surface-500 font-medium">No listings pending review</p>
             <p className="text-sm text-surface-400 mt-1">

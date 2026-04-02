@@ -61,7 +61,7 @@ function ToastBanner({ toast }: { toast: Toast }) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className={`fixed top-5 right-5 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated ${
+      className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-6 sm:top-6 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated ${
         toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
       }`}
     >
@@ -129,7 +129,7 @@ function MessageBubble({ msg, isMine }: { msg: InquiryMessage; isMine: boolean }
           <span className={`text-xs font-semibold ${isMine ? 'text-white/80' : 'text-surface-500'}`}>
             {msg.senderName}
           </span>
-          <span className={`text-[11px] ${isMine ? 'text-white/50' : 'text-surface-400'}`}>
+          <span className={`text-xs ${isMine ? 'text-white/50' : 'text-surface-400'}`}>
             {formatDate(msg.createdAt)}
           </span>
         </div>
@@ -545,6 +545,16 @@ export default function UserInquiryDetail() {
                     </span>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Notice: business no longer active */}
+            {inquiry.businessStatus && inquiry.businessStatus !== 'approved' && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>
+                  The business you contacted is currently unavailable on the portal. They may not be able to respond to your inquiry at this time.
+                </span>
               </div>
             )}
 

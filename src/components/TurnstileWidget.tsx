@@ -41,6 +41,7 @@ const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetProps>(
         widgetIdRef.current = window.turnstile.render(container, {
           sitekey: SITE_KEY,
           theme: 'light',
+          appearance: 'always',
           callback: (token: string) => callbacksRef.current.onSuccess(token),
           'error-callback': () => callbacksRef.current.onError?.(),
           'expired-callback': () => callbacksRef.current.onExpire?.(),

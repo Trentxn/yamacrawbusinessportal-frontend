@@ -170,7 +170,7 @@ export default function AdminBusinessDetail() {
         className="inline-flex items-center gap-1.5 text-sm text-surface-500 hover:text-primary-600 mb-6"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to All Businesses
+        Back to All Listings
       </Link>
 
       {/* Status bar */}

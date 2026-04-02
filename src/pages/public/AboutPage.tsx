@@ -5,7 +5,7 @@ export default function AboutPage() {
         About the Yamacraw Initiative
       </h1>
       <p className="mt-2 text-lg text-surface-500">
-        Connecting and uplifting local businesses in the Yamacraw community.
+        Connecting and uplifting local businesses and contractors in the Yamacraw community.
       </p>
 
       {/* Minister section */}
@@ -55,8 +55,9 @@ export default function AboutPage() {
             </h3>
             <p className="mt-2 text-surface-600">
               We bridge the gap between residents looking for services and the
-              local businesses that provide them, making it simple to find,
-              contact, and support businesses in your own community.
+              local businesses and contractors that provide them. No more
+              wondering who to call — the portal makes it simple to find,
+              contact, and support service providers in your own community.
             </p>
           </div>
           <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-card">
@@ -89,8 +90,9 @@ export default function AboutPage() {
           <p>
             <span className="font-semibold text-surface-900">For residents:</span>{' '}
             Browse the directory, search by category or keyword, and reach out
-            to any business through our secure inquiry form. No account
-            required.
+            to any business or contractor through our secure inquiry form. No account
+            required. A common challenge in the community is not knowing who to contact
+            for certain services — this portal solves that by keeping everyone connected.
           </p>
           <p>
             <span className="font-semibold text-surface-900">For businesses:</span>{' '}
@@ -100,8 +102,15 @@ export default function AboutPage() {
             the entire community.
           </p>
           <p>
-            All listings are reviewed by our team before going live to ensure
-            quality and trust across the platform.
+            <span className="font-semibold text-surface-900">For contractors:</span>{' '}
+            Government contract workers can register and list the services they
+            provide, making themselves visible to residents who may need their help.
+            Whether it's maintenance, landscaping, construction, or any other contracted
+            service, the portal ensures you are easy to find and contact.
+          </p>
+          <p>
+            All listings — both businesses and contractors — are reviewed by our
+            team before going live to ensure quality and trust across the platform.
           </p>
         </div>
       </div>

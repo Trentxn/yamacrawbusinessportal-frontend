@@ -11,7 +11,7 @@ export const authApi = {
     password: string
     firstName: string
     lastName: string
-    role: 'public_user' | 'business_owner'
+    role: 'public_user' | 'business_owner' | 'contractor'
     tosAccepted: boolean
     captchaToken?: string
   }) {
@@ -23,7 +23,7 @@ export const authApi = {
   },
 
   verifyEmail(token: string) {
-    return client.post('/auth/verify-email', { token })
+    return client.post<AuthResponse>('/auth/verify-email', { token })
   },
 
   forgotPassword(email: string, captchaToken?: string) {

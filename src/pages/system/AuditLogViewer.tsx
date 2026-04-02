@@ -79,7 +79,7 @@ function UserSearchFilter({ value, onChange }: { value: string; onChange: (id: s
                 <span className="text-sm font-medium text-surface-800">
                   {u.firstName} {u.lastName}
                 </span>
-                <span className="text-[10px] text-surface-400 font-mono">
+                <span className="text-xs text-surface-400 font-mono">
                   {u.id.slice(0, 8)}... · {u.email}
                 </span>
               </button>
@@ -250,7 +250,7 @@ export default function AuditLogViewer() {
                         <div>
                           <span className="text-sm text-surface-700 font-medium">{log.userName}</span>
                           {log.userId && (
-                            <span className="block text-[10px] text-surface-400 font-mono">{log.userId.slice(0, 8)}...</span>
+                            <span className="block text-xs text-surface-400 font-mono">{log.userId.slice(0, 8)}...</span>
                           )}
                         </div>
                       ) : (

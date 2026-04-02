@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, CheckCircle, Loader2 } from 'lucide-react'
+import client from '@/api/client'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -21,8 +22,8 @@ const contactInfo = [
   {
     icon: Phone,
     label: 'Phone',
-    value: '(242) 555-0123',
-    href: 'tel:+12425550123',
+    value: '1 (242) 828-1738 / 1 (242) 815-7047',
+    href: 'tel:+12428281738',
   },
   {
     icon: MapPin,
@@ -34,6 +35,8 @@ const contactInfo = [
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -45,9 +48,18 @@ export default function ContactPage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setSubmitted(true)
+    setSending(true)
+    setError('')
+    try {
+      await client.post('/contact', form)
+      setSubmitted(true)
+    } catch {
+      setError('Failed to send your message. Please try again or email us directly.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -239,12 +251,17 @@ export default function ContactPage() {
                       />
                     </div>
 
+                    {error && (
+                      <p className="text-sm text-red-600">{error}</p>
+                    )}
+
                     <button
                       type="submit"
-                      className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
+                      disabled={sending}
+                      className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
                     >
-                      <Send className="h-4 w-4" />
-                      Send Message
+                      {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                      {sending ? 'Sending...' : 'Send Message'}
                     </button>
                   </form>
                 </>

@@ -80,7 +80,7 @@ export default function RegisterPage() {
         password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
-        role: data.role === 'contractor' ? 'business_owner' : data.role,
+        role: data.role,
         tosAccepted: data.tosAccepted,
         captchaToken,
       })
@@ -146,7 +146,7 @@ export default function RegisterPage() {
           <label className="mb-2 block text-sm font-medium text-surface-700">
             I want to...
           </label>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button
               type="button"
               onClick={() => setValue('role', 'public_user', { shouldValidate: true })}

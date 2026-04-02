@@ -19,6 +19,7 @@ const roleBadge: Record<UserRole, string> = {
   system_admin: 'bg-purple-100 text-purple-700',
   admin: 'bg-blue-100 text-blue-700',
   business_owner: 'bg-amber-100 text-amber-700',
+  contractor: 'bg-teal-100 text-teal-700',
   public_user: 'bg-surface-100 text-surface-600',
 }
 
@@ -26,6 +27,7 @@ const roleLabel: Record<UserRole, string> = {
   system_admin: 'System Admin',
   admin: 'Admin',
   business_owner: 'Business Owner',
+  contractor: 'Contractor',
   public_user: 'Public User',
 }
 
@@ -135,6 +137,7 @@ export default function UserManagement() {
           <option value="system_admin">System Admin</option>
           <option value="admin">Admin</option>
           <option value="business_owner">Business Owner</option>
+          <option value="contractor">Contractor</option>
           <option value="public_user">Public User</option>
         </select>
         <select

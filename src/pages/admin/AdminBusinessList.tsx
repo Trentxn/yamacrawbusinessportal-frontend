@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Building2,
+  HardHat,
   Loader2,
 } from 'lucide-react'
 import { adminApi } from '@/api/admin'
@@ -48,6 +49,7 @@ export default function AdminBusinessList() {
   const basePath = useAdminBasePath()
   const [statusFilter, setStatusFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [typeFilter, setTypeFilter] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const pageSize = 15
@@ -58,11 +60,12 @@ export default function AdminBusinessList() {
   })
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['admin', 'businesses', statusFilter, categoryFilter, page],
+    queryKey: ['admin', 'businesses', statusFilter, categoryFilter, typeFilter, page],
     queryFn: () =>
       adminApi.listAllBusinesses({
         status: statusFilter || undefined,
         category: categoryFilter || undefined,
+        listingType: typeFilter || undefined,
         page,
         pageSize,
       }).then((r) => r.data),
@@ -85,10 +88,10 @@ export default function AdminBusinessList() {
       className="max-w-6xl mx-auto py-10 px-6"
     >
       <h1 className="text-3xl font-bold text-surface-900 mb-2">
-        All Businesses
+        All Listings
       </h1>
       <p className="text-surface-500 mb-8">
-        View and manage all business listings on the platform.
+        View and manage all business and contractor listings on the platform.
       </p>
 
       {/* Filters */}
@@ -124,6 +127,19 @@ export default function AdminBusinessList() {
           ))}
         </select>
 
+        <select
+          value={typeFilter}
+          onChange={(e) => {
+            setTypeFilter(e.target.value)
+            setPage(1)
+          }}
+          className="rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm text-surface-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+        >
+          <option value="">All Types</option>
+          <option value="business">Business</option>
+          <option value="contractor">Contractor</option>
+        </select>
+
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
           <input
@@ -141,7 +157,7 @@ export default function AdminBusinessList() {
         {isLoading ? (
           <div className="flex items-center justify-center py-20 text-surface-400">
             <Loader2 className="h-5 w-5 animate-spin mr-2" />
-            Loading businesses...
+            Loading listings...
           </div>
         ) : isError ? (
           <div className="py-20 text-center text-red-500">
@@ -150,7 +166,7 @@ export default function AdminBusinessList() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-surface-400">
             <Building2 className="h-10 w-10 mb-3 text-surface-300" />
-            <p>No businesses found matching your filters.</p>
+            <p>No listings found matching your filters.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -158,6 +174,7 @@ export default function AdminBusinessList() {
             <thead>
               <tr className="border-b border-surface-100 bg-surface-50 text-left text-xs font-medium uppercase tracking-wider text-surface-500">
                 <th className="px-5 py-3">Name</th>
+                <th className="px-5 py-3">Type</th>
                 <th className="px-5 py-3">Category</th>
                 <th className="px-5 py-3">Status</th>
                 <th className="px-5 py-3 text-center">Featured</th>
@@ -184,6 +201,19 @@ export default function AdminBusinessList() {
                         {biz.name}
                       </span>
                     </div>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    {biz.listingType === 'contractor' ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-medium text-teal-700">
+                        <HardHat className="h-3 w-3" />
+                        Contractor
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-medium text-primary-600">
+                        <Building2 className="h-3 w-3" />
+                        Business
+                      </span>
+                    )}
                   </td>
                   <td className="px-5 py-3.5 text-surface-600">
                     {biz.category ?? '--'}

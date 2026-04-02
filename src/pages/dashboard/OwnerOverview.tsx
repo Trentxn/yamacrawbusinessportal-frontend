@@ -67,6 +67,7 @@ const fadeUp = {
 
 export default function OwnerOverview() {
   const { user } = useAuth()
+  const isContractor = user?.role === 'contractor'
 
   const { data: listings, isLoading: listingsLoading } = useQuery({
     queryKey: ['my-listings'],
@@ -94,10 +95,10 @@ export default function OwnerOverview() {
   const recentInquiries = inquiriesData?.items.slice(0, 5) ?? []
 
   const stats = [
-    { label: 'Total Listings',      value: totalListings,   icon: Store,          color: 'text-primary-600 bg-primary-50' },
-    { label: 'Total Inquiries',     value: totalInquiries,  icon: MessageSquare,  color: 'text-blue-600 bg-blue-50' },
+    { label: isContractor ? 'Total Services' : 'Total Listings', value: totalListings, icon: Store, color: 'text-primary-600 bg-primary-50' },
+    { label: isContractor ? 'Client Inquiries' : 'Total Inquiries', value: totalInquiries, icon: MessageSquare, color: 'text-blue-600 bg-blue-50' },
     { label: 'Pending Inquiries',   value: pendingInquiries, icon: Clock,         color: 'text-amber-600 bg-amber-50' },
-    { label: 'Approved Listings',   value: approvedListings, icon: CheckCircle2,  color: 'text-emerald-600 bg-emerald-50' },
+    { label: isContractor ? 'Approved Services' : 'Approved Listings', value: approvedListings, icon: CheckCircle2, color: 'text-emerald-600 bg-emerald-50' },
   ]
 
   // ─── Loading skeleton ────────────────────────────────────────────────────
@@ -140,7 +141,9 @@ export default function OwnerOverview() {
           Welcome back{user?.firstName ? `, ${user.firstName}` : ''}
         </h1>
         <p className="mt-1 text-sm text-surface-500">
-          Here is a snapshot of your listings and inquiries.
+          {isContractor
+            ? 'Here is a snapshot of your services and client inquiries.'
+            : 'Here is a snapshot of your listings and inquiries.'}
         </p>
       </motion.div>
 
@@ -175,14 +178,14 @@ export default function OwnerOverview() {
           className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-5 rounded-lg text-sm transition-colors"
         >
           <Plus className="h-4 w-4" />
-          Create New Listing
+          {isContractor ? 'Add New Service' : 'Create New Listing'}
         </Link>
         <Link
           to="/dashboard/inquiries"
           className="inline-flex items-center gap-2 border border-surface-300 text-surface-700 hover:bg-surface-50 font-medium py-2.5 px-5 rounded-lg text-sm transition-colors"
         >
           <MessageSquare className="h-4 w-4" />
-          View Inquiries
+          {isContractor ? 'View Client Inquiries' : 'View Inquiries'}
         </Link>
       </motion.div>
 
@@ -195,13 +198,13 @@ export default function OwnerOverview() {
         >
           <div className="bg-white border border-surface-200 rounded-xl shadow-card overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-surface-100">
-              <h2 className="text-base font-semibold text-surface-900">My Listings</h2>
+              <h2 className="text-base font-semibold text-surface-900">{isContractor ? 'My Services' : 'My Listings'}</h2>
               {totalListings > 0 && (
                 <Link
                   to="/dashboard/listings"
                   className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700"
                 >
-                  View All Listings
+                  {isContractor ? 'View All Services' : 'View All Listings'}
                   <ArrowRight className="h-3 w-3" />
                 </Link>
               )}
@@ -215,14 +218,16 @@ export default function OwnerOverview() {
                   </div>
                   <h3 className="text-sm font-semibold text-surface-900 mb-1">Get Started</h3>
                   <p className="text-xs text-surface-500 mb-4 max-w-xs mx-auto">
-                    Add your business to the Yamacraw directory so residents and visitors can find you.
+                    {isContractor
+                      ? 'Add your government contract services to the Yamacraw directory so residents can find and reach you.'
+                      : 'Add your business to the Yamacraw directory so residents and visitors can find you.'}
                   </p>
                   <Link
                     to="/dashboard/listings/new"
                     className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg text-sm transition-colors"
                   >
                     <Plus className="h-4 w-4" />
-                    Create Your First Listing
+                    {isContractor ? 'Add Your First Service' : 'Create Your First Listing'}
                   </Link>
                 </div>
               ) : (
@@ -245,7 +250,7 @@ export default function OwnerOverview() {
                           )}
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-surface-100 text-surface-600">
+                          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-surface-100 text-surface-600">
                             {LISTING_TYPE_LABEL[listing.listingType] || listing.listingType}
                           </span>
                           <span
@@ -306,17 +311,17 @@ export default function OwnerOverview() {
                           {inquiry.senderName}
                         </p>
                         <span
-                          className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${INQUIRY_STATUS_BADGE[inquiry.status]}`}
+                          className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${INQUIRY_STATUS_BADGE[inquiry.status]}`}
                         >
                           {INQUIRY_STATUS_LABEL[inquiry.status]}
                         </span>
                       </div>
                       <p className="text-xs text-surface-600 truncate">{inquiry.subject}</p>
                       <div className="flex items-center justify-between mt-1">
-                        <p className="text-[10px] text-surface-400 truncate">
+                        <p className="text-xs text-surface-400 truncate">
                           {inquiry.businessName}
                         </p>
-                        <p className="text-[10px] text-surface-400 shrink-0">
+                        <p className="text-xs text-surface-400 shrink-0">
                           {formatDate(inquiry.createdAt)}
                         </p>
                       </div>

@@ -13,8 +13,10 @@ import {
 } from 'lucide-react'
 
 const navLinks = [
+  { label: 'Home', to: '/' },
   { label: 'Directory', to: '/directory' },
   { label: 'About', to: '/about' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 const footerLinks = [
@@ -93,7 +95,7 @@ export default function PublicLayout() {
                       onClick={() => setUserDropdownOpen(false)}
                     />
                     <div className="absolute right-0 z-50 mt-1 w-48 rounded-lg border border-surface-200 bg-white py-1 shadow-elevated">
-                      {user.role === 'business_owner' && (
+                      {(user.role === 'business_owner' || user.role === 'contractor') && (
                         <Link
                           to="/dashboard"
                           onClick={() => setUserDropdownOpen(false)}
@@ -204,7 +206,7 @@ export default function PublicLayout() {
                       {user.firstName} {user.lastName}
                     </span>
                   </div>
-                  {user.role === 'business_owner' && (
+                  {(user.role === 'business_owner' || user.role === 'contractor') && (
                     <Link
                       to="/dashboard"
                       onClick={() => setMobileMenuOpen(false)}

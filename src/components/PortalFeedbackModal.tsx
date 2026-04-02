@@ -36,8 +36,8 @@ export default function PortalFeedbackModal({ onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl mx-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
         {submitted || alreadySubmitted ? (
           <div className="flex flex-col items-center py-6">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">

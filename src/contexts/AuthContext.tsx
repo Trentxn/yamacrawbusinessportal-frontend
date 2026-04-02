@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean
   isLoading: boolean
   login: (email: string, password: string, captchaToken?: string) => Promise<void>
+  loginFromTokens: (accessToken: string, refreshToken: string, user: User) => void
   register: (data: RegisterData) => Promise<void>
   logout: () => Promise<void>
   updateUser: (user: User) => void
@@ -19,7 +20,7 @@ interface RegisterData {
   password: string
   firstName: string
   lastName: string
-  role: 'public_user' | 'business_owner'
+  role: 'public_user' | 'business_owner' | 'contractor'
   tosAccepted: boolean
   captchaToken?: string
 }
@@ -57,6 +58,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('refresh_token', data.refreshToken)
     localStorage.setItem('user', JSON.stringify(data.user))
     setUser(data.user)
+  }, [])
+
+  const loginFromTokens = useCallback((accessToken: string, refreshToken: string, userData: User) => {
+    localStorage.setItem('access_token', accessToken)
+    localStorage.setItem('refresh_token', refreshToken)
+    localStorage.setItem('user', JSON.stringify(userData))
+    setUser(userData)
   }, [])
 
   const register = useCallback(async (registerData: RegisterData) => {
@@ -98,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         isLoading,
         login,
+        loginFromTokens,
         register,
         logout,
         updateUser,

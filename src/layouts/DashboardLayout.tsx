@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Store,
   MessageSquare,
+  Send,
   Star,
   Home,
   Menu,
@@ -21,6 +22,7 @@ const TOUR_KEYS: Record<string, string> = {
   '/dashboard/overview': 'overview',
   '/dashboard/listings': 'listings',
   '/dashboard/inquiries': 'inquiries',
+  '/account/inquiries': 'sent-inquiries',
   '/dashboard/reviews': 'reviews',
 }
 
@@ -28,6 +30,7 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const isContractor = user?.role === 'contractor'
   const { run: tourRun, steps: tourSteps, handleEvent: tourHandler } = useDashboardTour()
 
   // Fetch count of open (unread) inquiries for the badge
@@ -42,13 +45,14 @@ export default function DashboardLayout() {
 
   const sidebarLinks = [
     { label: 'Overview', to: '/dashboard/overview', icon: LayoutDashboard },
-    { label: 'My Listings', to: '/dashboard/listings', icon: Store },
+    { label: isContractor ? 'My Services' : 'My Listings', to: '/dashboard/listings', icon: Store },
     {
-      label: 'Inquiries',
+      label: isContractor ? 'Client Inquiries' : 'Received Inquiries',
       to: '/dashboard/inquiries',
       icon: MessageSquare,
       badge: openInquiries ?? 0,
     },
+    { label: 'Sent Inquiries', to: '/account/inquiries', icon: Send },
     { label: 'Reviews', to: '/dashboard/reviews', icon: Star },
   ]
 
@@ -94,7 +98,7 @@ export default function DashboardLayout() {
       >
         {/* Sidebar header */}
         <div className="flex h-16 items-center justify-between px-6">
-          <span className="text-lg font-bold text-white">Dashboard</span>
+          <span className="text-lg font-bold text-white">{isContractor ? 'Contractor Portal' : 'Dashboard'}</span>
           <button
             onClick={() => setSidebarOpen(false)}
             className="rounded-lg p-1 text-primary-300 hover:text-white lg:hidden"

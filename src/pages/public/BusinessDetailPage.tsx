@@ -25,6 +25,7 @@ import {
   ChevronRight,
   Flag,
   AlertTriangle,
+  X,
 } from 'lucide-react'
 import { businessesApi } from '@/api/businesses'
 import { serviceRequestsApi } from '@/api/serviceRequests'
@@ -748,6 +749,7 @@ function ReportButton({ business }: { business: Business }) {
 export default function BusinessDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { user } = useAuth()
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   const {
     data: business,
@@ -856,10 +858,12 @@ export default function BusinessDetailPage() {
               <motion.div variants={fadeUp}>
                 <h2 className="mb-3 text-lg font-bold text-surface-900">Photos</h2>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {business.photos.map((photo) => (
-                    <div
+                  {business.photos.map((photo, idx) => (
+                    <button
                       key={photo.id}
-                      className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-surface-200 bg-surface-100"
+                      type="button"
+                      onClick={() => setLightboxIndex(idx)}
+                      className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-surface-200 bg-surface-100 cursor-pointer"
                     >
                       <img
                         src={photo.url}
@@ -868,13 +872,71 @@ export default function BusinessDetailPage() {
                       />
                       {photo.caption && (
                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-2.5 pt-6">
-                          <p className="text-xs text-white">{photo.caption}</p>
+                          <p className="text-xs text-white text-left">{photo.caption}</p>
                         </div>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               </motion.div>
+            )}
+
+            {/* Photo Lightbox */}
+            {lightboxIndex !== null && hasPhotos && (
+              <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4">
+                <button
+                  onClick={() => setLightboxIndex(null)}
+                  className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors z-10"
+                  aria-label="Close"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+
+                {/* Previous */}
+                {business.photos.length > 1 && (
+                  <button
+                    onClick={() => setLightboxIndex((lightboxIndex - 1 + business.photos.length) % business.photos.length)}
+                    className="absolute left-3 sm:left-6 rounded-full bg-white/10 p-2.5 text-white hover:bg-white/20 transition-colors z-10"
+                    aria-label="Previous photo"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                )}
+
+                {/* Image */}
+                <div className="max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex flex-col items-center">
+                  <img
+                    src={business.photos[lightboxIndex].url}
+                    alt={business.photos[lightboxIndex].caption || business.name}
+                    className="max-h-[80vh] max-w-full rounded-lg object-contain"
+                  />
+                  {business.photos[lightboxIndex].caption && (
+                    <p className="mt-3 text-sm text-white/80 text-center">
+                      {business.photos[lightboxIndex].caption}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-white/50">
+                    {lightboxIndex + 1} / {business.photos.length}
+                  </p>
+                </div>
+
+                {/* Next */}
+                {business.photos.length > 1 && (
+                  <button
+                    onClick={() => setLightboxIndex((lightboxIndex + 1) % business.photos.length)}
+                    className="absolute right-3 sm:right-6 rounded-full bg-white/10 p-2.5 text-white hover:bg-white/20 transition-colors z-10"
+                    aria-label="Next photo"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                )}
+
+                {/* Click backdrop to close */}
+                <div
+                  className="absolute inset-0 -z-10"
+                  onClick={() => setLightboxIndex(null)}
+                />
+              </div>
             )}
 
             {/* Tags */}
@@ -1008,7 +1070,7 @@ export default function BusinessDetailPage() {
                         <span className="flex items-center gap-2">
                           {day}
                           {isToday && (
-                            <span className="rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
+                            <span className="rounded-full bg-primary-600 px-1.5 py-0.5 text-xs font-bold uppercase text-white">
                               Today
                             </span>
                           )}

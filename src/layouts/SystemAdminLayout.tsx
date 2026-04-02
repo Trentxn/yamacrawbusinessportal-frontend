@@ -35,7 +35,7 @@ const adminLinks = [
     to: '/system/moderation',
     icon: ShieldCheck,
   },
-  { label: 'All Businesses', to: '/system/businesses', icon: Building2 },
+  { label: 'All Listings', to: '/system/businesses', icon: Building2 },
   { label: 'Categories', to: '/system/categories', icon: FolderTree },
   { label: 'Inquiries', to: '/system/inquiries', icon: MessageSquare },
   { label: 'Reviews', to: '/system/reviews', icon: Star },

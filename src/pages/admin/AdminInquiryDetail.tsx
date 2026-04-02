@@ -6,7 +6,7 @@ import {
   ArrowLeft, XCircle, CheckCircle2, Loader2,
   Mail, Phone, User, Calendar, MessageSquare,
   Lock, Building2, RotateCcw, ChevronDown,
-  Flag, ShieldAlert,
+  Flag, ShieldAlert, AlertTriangle,
 } from 'lucide-react'
 import { serviceRequestsApi } from '@/api/serviceRequests'
 import { useAuth } from '@/contexts/AuthContext'
@@ -46,7 +46,7 @@ function ToastBanner({ toast }: { toast: Toast }) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className={`fixed top-5 right-5 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated ${
+      className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-6 sm:top-6 z-50 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-elevated ${
         toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
       }`}
     >
@@ -90,7 +90,7 @@ function isWithin24Hours(iso: string | null): boolean {
 // ─── Message bubble (admin third-party observer view) ────────────────────────
 
 function MessageBubble({ msg }: { msg: InquiryMessage }) {
-  const isBusiness = msg.senderRole === 'business_owner'
+  const isBusiness = msg.senderRole === 'business_owner' || msg.senderRole === 'contractor'
   const isAdmin = msg.senderRole === 'admin' || msg.senderRole === 'system_admin'
   const bgClass = isBusiness
     ? 'bg-primary-50 border border-primary-200 text-surface-800'
@@ -105,16 +105,16 @@ function MessageBubble({ msg }: { msg: InquiryMessage }) {
           <span className="text-xs font-semibold text-surface-600">
             {msg.senderName}
           </span>
-          <span className="text-[11px] text-surface-400">
+          <span className="text-xs text-surface-400">
             {formatDate(msg.createdAt)}
           </span>
           {isBusiness && (
-            <span className="text-[10px] font-medium uppercase tracking-wider text-primary-500">
+            <span className="text-xs font-medium uppercase tracking-wider text-primary-500">
               Business
             </span>
           )}
           {isAdmin && (
-            <span className="text-[10px] font-medium uppercase tracking-wider text-amber-600">
+            <span className="text-xs font-medium uppercase tracking-wider text-amber-600">
               Admin
             </span>
           )}
@@ -551,6 +551,24 @@ export default function AdminInquiryDetail() {
                     </span>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Notice: business or sender account no longer active */}
+            {inquiry.businessStatus && inquiry.businessStatus !== 'approved' && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>
+                  The business associated with this inquiry is currently <strong>{inquiry.businessStatus}</strong> and is not active on the portal.
+                </span>
+              </div>
+            )}
+            {inquiry.senderAccountStatus && inquiry.senderAccountStatus !== 'active' && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>
+                  The sender's account is currently <strong>{inquiry.senderAccountStatus}</strong> and they are no longer reachable via the portal.
+                </span>
               </div>
             )}
 

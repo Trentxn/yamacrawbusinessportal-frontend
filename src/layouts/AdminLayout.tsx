@@ -41,7 +41,7 @@ export default function AdminLayout() {
       icon: ShieldCheck,
       badge: pendingCount,
     },
-    { label: 'All Businesses', to: '/admin/businesses', icon: Building2 },
+    { label: 'All Listings', to: '/admin/businesses', icon: Building2 },
     { label: 'Categories', to: '/admin/categories', icon: FolderTree },
     { label: 'Users', to: '/admin/users', icon: Users },
     { label: 'Inquiries', to: '/admin/inquiries', icon: MessageSquare },

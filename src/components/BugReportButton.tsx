@@ -112,7 +112,7 @@ export default function BugReportButton() {
                       />
                     </div>
 
-                    <p className="text-[11px] text-surface-400">
+                    <p className="text-xs text-surface-400">
                       Your current page URL will be included automatically.
                     </p>
 

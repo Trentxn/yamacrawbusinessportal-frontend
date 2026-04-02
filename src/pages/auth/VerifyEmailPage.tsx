@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react'
 import { authApi } from '@/api/auth'
+import { useAuth } from '@/contexts/AuthContext'
 import type { AxiosError } from 'axios'
 
 const resendSchema = z.object({
@@ -18,6 +19,8 @@ type VerifyState = 'loading' | 'success' | 'error'
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { loginFromTokens } = useAuth()
   const token = searchParams.get('token')
 
   const [state, setState] = useState<VerifyState>(token ? 'loading' : 'error')
@@ -26,6 +29,7 @@ export default function VerifyEmailPage() {
   )
   const [resendSuccess, setResendSuccess] = useState(false)
   const [resendError, setResendError] = useState('')
+  const [countdown, setCountdown] = useState(5)
 
   const {
     register,
@@ -42,8 +46,11 @@ export default function VerifyEmailPage() {
 
     async function verify() {
       try {
-        await authApi.verifyEmail(token!)
-        if (!cancelled) setState('success')
+        const { data } = await authApi.verifyEmail(token!)
+        if (cancelled) return
+        // Auto-login with returned tokens
+        loginFromTokens(data.accessToken, data.refreshToken, data.user)
+        setState('success')
       } catch (err) {
         if (cancelled) return
         const axiosErr = err as AxiosError<{ message?: string; detail?: string }>
@@ -60,7 +67,45 @@ export default function VerifyEmailPage() {
     return () => {
       cancelled = true
     }
-  }, [token])
+  }, [token, loginFromTokens])
+
+  // Auto-redirect countdown after successful verification
+  useEffect(() => {
+    if (state !== 'success') return
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [state])
+
+  // Redirect when countdown reaches 0
+  useEffect(() => {
+    if (state !== 'success' || countdown > 0) return
+
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser)
+        if (userData.role === 'business_owner' || userData.role === 'contractor') {
+          navigate('/dashboard/overview', { replace: true })
+        } else if (userData.role === 'admin' || userData.role === 'system_admin') {
+          navigate('/admin/dashboard', { replace: true })
+        } else {
+          navigate('/account/inquiries', { replace: true })
+        }
+        return
+      } catch { /* fallthrough */ }
+    }
+    navigate('/', { replace: true })
+  }, [state, countdown, navigate])
 
   const onResend = async (data: ResendForm) => {
     setResendError('')
@@ -100,14 +145,14 @@ export default function VerifyEmailPage() {
           </div>
           <h2 className="text-2xl font-bold text-surface-900">Email verified!</h2>
           <p className="mt-2 text-sm text-surface-500">
-            Your email has been successfully verified. You can now sign in to your account.
+            Your account is ready. Redirecting you to your dashboard in {countdown}s...
           </p>
-          <Link
-            to="/"
+          <button
+            onClick={() => setCountdown(0)}
             className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-700"
           >
-            Go to Homepage
-          </Link>
+            Go to Dashboard Now
+          </button>
         </>
       )}
 

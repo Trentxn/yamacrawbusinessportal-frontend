@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Star, Flag, Trash2, AlertTriangle, MessageSquare, ChevronLeft, ChevronRight, Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { Star, Flag, Trash2, AlertTriangle, MessageSquare, ChevronLeft, ChevronRight, Loader2, CheckCircle2, XCircle, X, Eye } from 'lucide-react'
 import { adminApi } from '@/api/admin'
+import type { AdminReview } from '@/api/reviews'
 
 type ReviewStatus = 'approved' | 'flagged' | 'pending'
 
@@ -160,6 +161,107 @@ function DeleteModal({
   )
 }
 
+function ReviewDetailModal({
+  review,
+  onClose,
+  onFlag,
+  onDelete,
+}: {
+  review: AdminReview
+  onClose: () => void
+  onFlag: () => void
+  onDelete: () => void
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="relative mx-4 w-full max-w-lg rounded-xl bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-lg p-1 text-surface-400 hover:bg-surface-100 hover:text-surface-600"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <h3 className="text-lg font-semibold text-surface-900 mb-1">Review Detail</h3>
+        <p className="text-sm text-surface-500 mb-5">
+          For <span className="font-medium text-surface-700">{review.businessName ?? 'Unknown Business'}</span>
+        </p>
+
+        <div className="space-y-4">
+          {/* Rating */}
+          <div>
+            <label className="text-xs font-medium uppercase tracking-wider text-surface-400">Rating</label>
+            <div className="mt-1">
+              <StarRating rating={review.rating} />
+            </div>
+          </div>
+
+          {/* Reviewer */}
+          <div>
+            <label className="text-xs font-medium uppercase tracking-wider text-surface-400">Reviewer</label>
+            <p className="mt-1 text-sm text-surface-700">
+              {review.reviewer ? `${review.reviewer.firstName} ${review.reviewer.lastInitial}.` : 'Anonymous'}
+            </p>
+          </div>
+
+          {/* Comment */}
+          <div>
+            <label className="text-xs font-medium uppercase tracking-wider text-surface-400">Comment</label>
+            <div className="mt-1 rounded-lg border border-surface-200 bg-surface-50 p-3">
+              <p className="text-sm text-surface-700 whitespace-pre-wrap">{review.comment}</p>
+            </div>
+          </div>
+
+          {/* Status & Dates */}
+          <div className="flex items-center gap-6">
+            <div>
+              <label className="text-xs font-medium uppercase tracking-wider text-surface-400">Status</label>
+              <div className="mt-1">
+                <StatusBadge status={review.status} />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium uppercase tracking-wider text-surface-400">Submitted</label>
+              <p className="mt-1 text-sm text-surface-600">
+                {new Date(review.createdAt).toLocaleDateString(undefined, {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="mt-6 flex items-center justify-end gap-2 border-t border-surface-100 pt-4">
+          {review.status !== 'flagged' && (
+            <button
+              onClick={onFlag}
+              className="flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100"
+            >
+              <Flag className="h-3.5 w-3.5" />
+              Flag
+            </button>
+          )}
+          <button
+            onClick={onDelete}
+            className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Delete
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 export default function AdminReviews() {
   const queryClient = useQueryClient()
   const [statusFilter, setStatusFilter] = useState('')
@@ -168,6 +270,7 @@ export default function AdminReviews() {
 
   const [flagTarget, setFlagTarget] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [selectedReview, setSelectedReview] = useState<AdminReview | null>(null)
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['admin', 'reviews', statusFilter, page],
@@ -286,7 +389,8 @@ export default function AdminReviews() {
               {reviews.map((review) => (
                 <tr
                   key={review.id}
-                  className="hover:bg-surface-50 transition-colors"
+                  onClick={() => setSelectedReview(review)}
+                  className="hover:bg-surface-50 transition-colors cursor-pointer"
                 >
                   <td className="px-5 py-3.5 font-medium text-surface-800 max-w-[160px] truncate">
                     {review.businessName ?? 'Unknown'}
@@ -308,9 +412,16 @@ export default function AdminReviews() {
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setSelectedReview(review) }}
+                        title="View review"
+                        className="rounded-lg p-1.5 text-surface-400 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
                       {review.status !== 'flagged' && (
                         <button
-                          onClick={() => setFlagTarget(review.id)}
+                          onClick={(e) => { e.stopPropagation(); setFlagTarget(review.id) }}
                           title="Flag review"
                           className="rounded-lg p-1.5 text-surface-400 hover:bg-amber-50 hover:text-amber-600 transition-colors"
                         >
@@ -318,7 +429,7 @@ export default function AdminReviews() {
                         </button>
                       )}
                       <button
-                        onClick={() => setDeleteTarget(review.id)}
+                        onClick={(e) => { e.stopPropagation(); setDeleteTarget(review.id) }}
                         title="Delete review"
                         className="rounded-lg p-1.5 text-surface-400 hover:bg-red-50 hover:text-red-600 transition-colors"
                       >
@@ -357,6 +468,22 @@ export default function AdminReviews() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Review Detail Modal */}
+      {selectedReview && (
+        <ReviewDetailModal
+          review={selectedReview}
+          onClose={() => setSelectedReview(null)}
+          onFlag={() => {
+            setSelectedReview(null)
+            setFlagTarget(selectedReview.id)
+          }}
+          onDelete={() => {
+            setSelectedReview(null)
+            setDeleteTarget(selectedReview.id)
+          }}
+        />
       )}
 
       {/* Flag Modal */}

@@ -59,12 +59,17 @@ export const adminApi = {
   listAllBusinesses(params?: {
     status?: string
     category?: string
+    listingType?: string
     page?: number
     pageSize?: number
   }) {
-    const { pageSize, ...rest } = params || {}
+    const { pageSize, listingType, ...rest } = params || {}
     return client.get<PaginatedResponse<BusinessListItem>>('/admin/businesses', {
-      params: { ...rest, ...(pageSize !== undefined && { page_size: pageSize }) },
+      params: {
+        ...rest,
+        ...(pageSize !== undefined && { page_size: pageSize }),
+        ...(listingType !== undefined && { listing_type: listingType }),
+      },
     })
   },
 

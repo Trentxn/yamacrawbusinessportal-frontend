@@ -1,4 +1,4 @@
-export type UserRole = 'system_admin' | 'admin' | 'business_owner' | 'public_user'
+export type UserRole = 'system_admin' | 'admin' | 'business_owner' | 'contractor' | 'public_user'
 export type UserStatus = 'active' | 'inactive' | 'suspended' | 'pending_verification'
 export type BusinessStatus = 'draft' | 'pending_review' | 'approved' | 'rejected' | 'suspended' | 'archived'
 export type ListingType = 'business' | 'contractor'
@@ -83,7 +83,9 @@ export interface ServiceRequest {
   id: string
   businessId: string
   businessName: string | null
+  businessStatus: string | null
   userId: string | null
+  senderAccountStatus: string | null
   senderName: string
   senderEmail: string
   senderPhone: string | null
