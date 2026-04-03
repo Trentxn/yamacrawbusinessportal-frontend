@@ -53,7 +53,7 @@ export default function ContactPage() {
     setSending(true)
     setError('')
     try {
-      await client.post('/contact', form)
+      await client.post('/contact/', form)
       setSubmitted(true)
     } catch {
       setError('Failed to send your message. Please try again or email us directly.')
