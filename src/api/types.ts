@@ -37,6 +37,8 @@ export interface Category {
 export interface Business {
   id: string
   ownerId: string
+  ownerFirstName?: string | null
+  ownerLastName?: string | null
   categoryId: string
   category?: Category
   name: string

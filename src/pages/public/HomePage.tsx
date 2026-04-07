@@ -303,7 +303,7 @@ export default function HomePage() {
     queryKey: ['businesses', 'featured'],
     queryFn: () =>
       businessesApi
-        .list({ featured: true, pageSize: 6 })
+        .list({ featured: true, listingType: 'business', pageSize: 6 })
         .then((r) => r.data),
   })
 

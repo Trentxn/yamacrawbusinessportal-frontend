@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { Joyride } from 'react-joyride'
 import { useAuth } from '@/contexts/AuthContext'
@@ -31,7 +31,18 @@ export default function AccountLayout() {
   )
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { run: tourRun, steps: tourSteps, handleEvent: tourHandler } = useAccountTour()
+  const { run: tourRun, steps: tourSteps, handleEvent: tourHandler } = useAccountTour(() => {
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false)
+    }
+  })
+
+  // On mobile, open sidebar when the tour starts so tour targets are visible
+  useEffect(() => {
+    if (tourRun && window.innerWidth < 1024) {
+      setSidebarOpen(true)
+    }
+  }, [tourRun])
 
   const isActive = (path: string) => location.pathname.startsWith(path)
 

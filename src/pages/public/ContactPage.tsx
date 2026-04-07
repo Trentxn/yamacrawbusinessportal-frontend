@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, CheckCircle, Loader2 } from 'lucide-react'
 import client from '@/api/client'
+import TurnstileWidget from '@/components/TurnstileWidget'
+import type { TurnstileWidgetRef } from '@/components/TurnstileWidget'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -37,6 +39,8 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [captchaToken, setCaptchaToken] = useState('')
+  const turnstileRef = useRef<TurnstileWidgetRef>(null)
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -50,13 +54,24 @@ export default function ContactPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!captchaToken) {
+      setError('Please complete the verification check.')
+      return
+    }
     setSending(true)
     setError('')
     try {
-      await client.post('/contact/', form)
+      await client.post('/contact/', { ...form, captchaToken })
       setSubmitted(true)
-    } catch {
-      setError('Failed to send your message. Please try again or email us directly.')
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status
+      if (status === 429) {
+        setError('You have reached the daily message limit. Please try again tomorrow or email us directly.')
+      } else {
+        setError('Failed to send your message. Please try again or email us directly.')
+      }
+      turnstileRef.current?.reset()
+      setCaptchaToken('')
     } finally {
       setSending(false)
     }
@@ -160,6 +175,8 @@ export default function ContactPage() {
                     onClick={() => {
                       setSubmitted(false)
                       setForm({ name: '', email: '', subject: '', message: '' })
+                      setCaptchaToken('')
+                      turnstileRef.current?.reset()
                     }}
                     className="mt-6 text-sm font-semibold text-primary-600 transition-colors hover:text-primary-700"
                   >
@@ -187,6 +204,7 @@ export default function ContactPage() {
                           name="name"
                           type="text"
                           required
+                          maxLength={100}
                           value={form.name}
                           onChange={handleChange}
                           className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
@@ -225,6 +243,7 @@ export default function ContactPage() {
                         name="subject"
                         type="text"
                         required
+                        maxLength={200}
                         value={form.subject}
                         onChange={handleChange}
                         className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
@@ -244,6 +263,7 @@ export default function ContactPage() {
                         name="message"
                         required
                         rows={5}
+                        maxLength={5000}
                         value={form.message}
                         onChange={handleChange}
                         className="w-full resize-none rounded-lg border border-surface-300 px-3.5 py-2.5 text-sm text-surface-900 placeholder:text-surface-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
@@ -251,13 +271,19 @@ export default function ContactPage() {
                       />
                     </div>
 
+                    <TurnstileWidget
+                      ref={turnstileRef}
+                      onSuccess={setCaptchaToken}
+                      onExpire={() => setCaptchaToken('')}
+                    />
+
                     {error && (
                       <p className="text-sm text-red-600">{error}</p>
                     )}
 
                     <button
                       type="submit"
-                      disabled={sending}
+                      disabled={sending || !captchaToken}
                       className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
                     >
                       {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

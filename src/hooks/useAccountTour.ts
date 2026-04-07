@@ -3,7 +3,7 @@ import type { Step, EventData } from 'react-joyride'
 
 const TOUR_STORAGE_KEY = 'ybp_account_tour_completed'
 
-export function useAccountTour() {
+export function useAccountTour(onTourEnd?: () => void) {
   const hasCompleted = localStorage.getItem(TOUR_STORAGE_KEY) === 'true'
   const [run, setRun] = useState(!hasCompleted)
 
@@ -35,8 +35,9 @@ export function useAccountTour() {
     if (data.status === 'finished' || data.status === 'skipped') {
       localStorage.setItem(TOUR_STORAGE_KEY, 'true')
       setRun(false)
+      onTourEnd?.()
     }
-  }, [])
+  }, [onTourEnd])
 
   return { run, steps, handleEvent, setRun }
 }

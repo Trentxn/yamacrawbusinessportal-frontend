@@ -9,6 +9,7 @@ import {
   Plus,
   ArrowRight,
   Inbox,
+  XCircle,
 } from 'lucide-react'
 import { businessesApi } from '@/api/businesses'
 import { serviceRequestsApi } from '@/api/serviceRequests'
@@ -89,6 +90,8 @@ export default function OwnerOverview() {
 
   const totalListings = listings?.length ?? 0
   const approvedListings = listings?.filter((l) => l.status === 'approved').length ?? 0
+  const pendingListings = listings?.filter((l) => l.status === 'pending_review') ?? []
+  const rejectedListings = listings?.filter((l) => l.status === 'rejected') ?? []
   const totalInquiries = inquiriesData?.total ?? 0
   const pendingInquiries = inquiriesData?.items.filter((i) => i.status === 'open').length ?? 0
   const recentListings = listings?.slice(0, 3) ?? []
@@ -146,6 +149,58 @@ export default function OwnerOverview() {
             : 'Here is a snapshot of your listings and inquiries.'}
         </p>
       </motion.div>
+
+      {/* Pending / Rejected Alerts */}
+      {pendingListings.length > 0 && (
+        <motion.div
+          {...fadeUp}
+          transition={{ duration: 0.3, ease: 'easeOut' as const, delay: 0.03 }}
+          className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4"
+        >
+          <div className="flex items-start gap-3">
+            <Clock className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <div>
+              <p className="text-sm font-semibold text-amber-800">
+                {pendingListings.length === 1
+                  ? `1 ${isContractor ? 'service' : 'listing'} pending review`
+                  : `${pendingListings.length} ${isContractor ? 'services' : 'listings'} pending review`}
+              </p>
+              <p className="mt-0.5 text-xs text-amber-700">
+                {pendingListings.map((l) => l.name).join(', ')} — submitted and awaiting admin approval. You'll be notified once reviewed.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {rejectedListings.length > 0 && (
+        <motion.div
+          {...fadeUp}
+          transition={{ duration: 0.3, ease: 'easeOut' as const, delay: 0.03 }}
+          className="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4"
+        >
+          <div className="flex items-start gap-3">
+            <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+            <div>
+              <p className="text-sm font-semibold text-red-800">
+                {rejectedListings.length === 1
+                  ? `1 ${isContractor ? 'service' : 'listing'} was not approved`
+                  : `${rejectedListings.length} ${isContractor ? 'services' : 'listings'} were not approved`}
+              </p>
+              <p className="mt-0.5 text-xs text-red-700">
+                {rejectedListings.map((l) => l.name).join(', ')} — check the rejection reason and edit to resubmit.
+              </p>
+              <Link
+                to="/dashboard/listings"
+                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-red-700 hover:text-red-800"
+              >
+                View {isContractor ? 'services' : 'listings'}
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Stats Cards */}
       <motion.div

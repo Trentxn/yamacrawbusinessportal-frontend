@@ -277,7 +277,14 @@ function ListingCard({
         <p className="text-sm text-surface-600 line-clamp-2 mb-4">{listing.shortDescription}</p>
       )}
 
-      {/* Rejection reason */}
+      {/* Status notices */}
+      {status === 'pending_review' && (
+        <div className="mb-4 flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+          <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+          <span>Submitted and awaiting admin approval. You'll be notified once reviewed.</span>
+        </div>
+      )}
+
       {status === 'rejected' && (
         <div className="mb-4 flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
           <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />

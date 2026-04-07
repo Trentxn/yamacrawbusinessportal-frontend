@@ -15,6 +15,7 @@ import {
   Tag,
   ImageIcon,
   Loader2,
+  User,
 } from 'lucide-react'
 import { adminApi } from '@/api/admin'
 import type { BusinessStatus } from '@/api/types'
@@ -157,6 +158,12 @@ export default function ModerationDetail() {
                 <span className="text-sm text-surface-400">{business.category.name}</span>
               )}
             </div>
+            {(business.ownerFirstName || business.ownerLastName) && (
+              <div className="flex items-center gap-1.5 mt-1.5 text-sm text-surface-500">
+                <User className="h-3.5 w-3.5" />
+                Submitted by {business.ownerFirstName} {business.ownerLastName}
+              </div>
+            )}
           </div>
         </div>
 
@@ -286,6 +293,20 @@ export default function ModerationDetail() {
                 </span>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Logo */}
+        {business.logoUrl && (
+          <div>
+            <h3 className="text-sm font-semibold text-surface-500 uppercase tracking-wider mb-3">
+              Logo
+            </h3>
+            <img
+              src={business.logoUrl}
+              alt={`${business.name} logo`}
+              className="h-28 w-28 rounded-xl object-cover border border-surface-200"
+            />
           </div>
         )}
 

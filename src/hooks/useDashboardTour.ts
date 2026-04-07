@@ -9,7 +9,7 @@ function getTourKey(role?: string): string {
   return `${TOUR_STORAGE_PREFIX}`
 }
 
-export function useDashboardTour() {
+export function useDashboardTour(onTourEnd?: () => void) {
   const { user } = useAuth()
   const isContractor = user?.role === 'contractor'
   const tourKey = getTourKey(user?.role)
@@ -98,8 +98,9 @@ export function useDashboardTour() {
     if (data.status === 'finished' || data.status === 'skipped') {
       localStorage.setItem(tourKey, 'true')
       setRun(false)
+      onTourEnd?.()
     }
-  }, [tourKey])
+  }, [tourKey, onTourEnd])
 
   return { run, steps, handleEvent, setRun }
 }

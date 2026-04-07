@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Joyride } from 'react-joyride'
@@ -31,7 +31,19 @@ export default function DashboardLayout() {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const isContractor = user?.role === 'contractor'
-  const { run: tourRun, steps: tourSteps, handleEvent: tourHandler } = useDashboardTour()
+  const { run: tourRun, steps: tourSteps, handleEvent: tourHandler } = useDashboardTour(() => {
+    // Close sidebar on mobile when tour ends
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false)
+    }
+  })
+
+  // On mobile/tablet, open sidebar when the tour starts so tour targets are visible
+  useEffect(() => {
+    if (tourRun && window.innerWidth < 1024) {
+      setSidebarOpen(true)
+    }
+  }, [tourRun])
 
   // Fetch count of open (unread) inquiries for the badge
   const { data: openInquiries } = useQuery({
