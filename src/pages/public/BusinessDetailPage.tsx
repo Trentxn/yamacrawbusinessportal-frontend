@@ -782,6 +782,20 @@ export default function BusinessDetailPage() {
         </Link>
       </div>
 
+      {business.isDemo && (
+        <div className="mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 via-amber-50 to-yellow-50 px-4 py-3 text-sm text-amber-800 shadow-sm">
+            <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-500 text-[10px] font-black uppercase tracking-wider text-white">!</span>
+            <div className="leading-snug">
+              <p className="font-semibold">This is a demo listing.</p>
+              <p className="text-amber-700/90">
+                The business shown here is fictional and exists only to demonstrate how listings appear on the Yamacraw Business Portal. Contact details and addresses are not real.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <motion.div
         initial="hidden"
         animate="visible"
@@ -830,6 +844,11 @@ export default function BusinessDetailPage() {
                     <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
                       <Briefcase className="h-3 w-3" />
                       Contractor
+                    </span>
+                  )}
+                  {business.isDemo && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-amber-700 ring-1 ring-amber-500/30">
+                      Demo
                     </span>
                   )}
                 </div>

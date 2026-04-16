@@ -10,6 +10,7 @@ export interface BusinessListItem {
   logoUrl: string | null
   listingType: ListingType
   isFeatured: boolean
+  isDemo?: boolean
   status: string
   averageRating: number | null
   reviewCount: number

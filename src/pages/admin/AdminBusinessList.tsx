@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAdminBasePath } from '@/hooks/useAdminBasePath'
-import { motion } from 'framer-motion'
+import { useAuth } from '@/contexts/AuthContext'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
   Star,
@@ -12,6 +13,9 @@ import {
   Building2,
   HardHat,
   Loader2,
+  Trash2,
+  AlertTriangle,
+  X,
 } from 'lucide-react'
 import { adminApi } from '@/api/admin'
 
@@ -47,12 +51,20 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function AdminBusinessList() {
   const basePath = useAdminBasePath()
+  const { user } = useAuth()
+  const isSystemAdmin = user?.role === 'system_admin'
+  const queryClient = useQueryClient()
+
   const [statusFilter, setStatusFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const pageSize = 15
+
+  const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false)
+  const [rowConfirmId, setRowConfirmId] = useState<string | null>(null)
+  const [actionMessage, setActionMessage] = useState<string | null>(null)
 
   const { data: categories } = useQuery({
     queryKey: ['admin', 'categories'],
@@ -74,6 +86,34 @@ export default function AdminBusinessList() {
   const businesses = data?.items ?? []
   const totalPages = data?.totalPages ?? 1
 
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin', 'businesses'] })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'stats'] })
+    queryClient.invalidateQueries({ queryKey: ['businesses'] })
+  }
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: () => adminApi.deleteAllDemoBusinesses().then((r) => r.data),
+    onSuccess: (data) => {
+      setActionMessage(data.message)
+      setBulkConfirmOpen(false)
+      invalidate()
+      setTimeout(() => setActionMessage(null), 4000)
+    },
+  })
+
+  const rowDeleteMutation = useMutation({
+    mutationFn: (id: string) => adminApi.hardDeleteDemoBusiness(id).then((r) => r.data),
+    onSuccess: (data) => {
+      setActionMessage(data.message)
+      setRowConfirmId(null)
+      invalidate()
+      setTimeout(() => setActionMessage(null), 4000)
+    },
+  })
+
+  const rowToConfirm = rowConfirmId ? businesses.find((b) => b.id === rowConfirmId) : null
+
   const filtered = search
     ? businesses.filter((b) =>
         b.name.toLowerCase().includes(search.toLowerCase()),
@@ -87,12 +127,38 @@ export default function AdminBusinessList() {
       transition={{ duration: 0.25 }}
       className="max-w-6xl mx-auto py-10 px-6"
     >
-      <h1 className="text-3xl font-bold text-surface-900 mb-2">
-        All Listings
-      </h1>
-      <p className="text-surface-500 mb-8">
-        View and manage all business and contractor listings on the platform.
-      </p>
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-surface-900 mb-2">
+            All Listings
+          </h1>
+          <p className="text-surface-500">
+            View and manage all business and contractor listings on the platform.
+          </p>
+        </div>
+        {isSystemAdmin && (
+          <button
+            onClick={() => setBulkConfirmOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 transition-colors hover:bg-amber-100"
+          >
+            <Trash2 className="h-4 w-4" />
+            Remove All Demo Listings
+          </button>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {actionMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700"
+          >
+            {actionMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -183,7 +249,7 @@ export default function AdminBusinessList() {
             </thead>
             <tbody className="divide-y divide-surface-100">
               {filtered.map((biz) => (
-                <tr key={biz.id} className="hover:bg-surface-50 transition-colors">
+                <tr key={biz.id} className={`transition-colors hover:bg-surface-50 ${biz.isDemo ? 'bg-amber-50/40' : ''}`}>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       {biz.logoUrl ? (
@@ -197,9 +263,16 @@ export default function AdminBusinessList() {
                           <Building2 className="h-4 w-4" />
                         </div>
                       )}
-                      <span className="font-medium text-surface-800">
-                        {biz.name}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-surface-800">
+                          {biz.name}
+                        </span>
+                        {biz.isDemo && (
+                          <span className="mt-0.5 inline-flex w-fit items-center gap-1 rounded-sm bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700">
+                            Demo
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
@@ -229,13 +302,25 @@ export default function AdminBusinessList() {
                     )}
                   </td>
                   <td className="px-5 py-3.5 text-right">
-                    <Link
-                      to={`${basePath}/businesses/${biz.id}`}
-                      className="inline-flex items-center gap-1.5 text-primary-600 hover:text-primary-700 font-medium text-sm"
-                    >
-                      <Eye className="h-3.5 w-3.5" />
-                      View
-                    </Link>
+                    <div className="flex items-center justify-end gap-3">
+                      <Link
+                        to={`${basePath}/businesses/${biz.id}`}
+                        className="inline-flex items-center gap-1.5 text-primary-600 hover:text-primary-700 font-medium text-sm"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        View
+                      </Link>
+                      {isSystemAdmin && biz.isDemo && (
+                        <button
+                          onClick={() => setRowConfirmId(biz.id)}
+                          className="inline-flex items-center gap-1.5 text-amber-700 hover:text-amber-800 font-medium text-sm"
+                          title="Permanently delete this demo listing"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -244,6 +329,134 @@ export default function AdminBusinessList() {
           </div>
         )}
       </div>
+
+      {/* Bulk delete confirmation */}
+      <AnimatePresence>
+        {bulkConfirmOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/40 backdrop-blur-sm px-4"
+            onClick={() => !bulkDeleteMutation.isPending && setBulkConfirmOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md rounded-2xl border border-surface-200 bg-white p-6 shadow-xl"
+            >
+              <button
+                onClick={() => setBulkConfirmOpen(false)}
+                disabled={bulkDeleteMutation.isPending}
+                className="absolute right-4 top-4 text-surface-400 hover:text-surface-600 disabled:opacity-50"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 text-lg font-bold text-surface-900">
+                Remove all demo listings?
+              </h3>
+              <p className="mb-5 text-sm leading-relaxed text-surface-600">
+                This will permanently delete every listing flagged as a demo across the entire directory. This action cannot be undone.
+              </p>
+              {bulkDeleteMutation.isError && (
+                <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  Failed to remove demo listings. Please try again.
+                </p>
+              )}
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={() => setBulkConfirmOpen(false)}
+                  disabled={bulkDeleteMutation.isPending}
+                  className="rounded-lg border border-surface-200 bg-white px-4 py-2 text-sm font-medium text-surface-600 hover:bg-surface-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => bulkDeleteMutation.mutate()}
+                  disabled={bulkDeleteMutation.isPending}
+                  className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                >
+                  {bulkDeleteMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                  Remove All Demos
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Single-row delete confirmation */}
+      <AnimatePresence>
+        {rowConfirmId && rowToConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/40 backdrop-blur-sm px-4"
+            onClick={() => !rowDeleteMutation.isPending && setRowConfirmId(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md rounded-2xl border border-surface-200 bg-white p-6 shadow-xl"
+            >
+              <button
+                onClick={() => setRowConfirmId(null)}
+                disabled={rowDeleteMutation.isPending}
+                className="absolute right-4 top-4 text-surface-400 hover:text-surface-600 disabled:opacity-50"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 text-lg font-bold text-surface-900">
+                Delete demo listing?
+              </h3>
+              <p className="mb-5 text-sm leading-relaxed text-surface-600">
+                &ldquo;{rowToConfirm.name}&rdquo; will be permanently removed from the directory. This action cannot be undone.
+              </p>
+              {rowDeleteMutation.isError && (
+                <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  Failed to delete listing. Please try again.
+                </p>
+              )}
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={() => setRowConfirmId(null)}
+                  disabled={rowDeleteMutation.isPending}
+                  className="rounded-lg border border-surface-200 bg-white px-4 py-2 text-sm font-medium text-surface-600 hover:bg-surface-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => rowDeleteMutation.mutate(rowToConfirm.id)}
+                  disabled={rowDeleteMutation.isPending}
+                  className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                >
+                  {rowDeleteMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                  Delete Listing
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Pagination */}
       {totalPages > 1 && (

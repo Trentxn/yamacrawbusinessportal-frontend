@@ -58,6 +58,7 @@ export interface Business {
   operatingHours: Record<string, { open: string; close: string } | string | null> | null
   socialLinks: Record<string, string> | null
   isFeatured: boolean
+  isDemo?: boolean
   tags: string[]
   photos: BusinessPhoto[]
   viewCount?: number

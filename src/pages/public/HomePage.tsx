@@ -491,7 +491,7 @@ export default function HomePage() {
                       to={`/business/${biz.slug}`}
                       className="group flex h-full flex-col overflow-hidden rounded-xl border border-surface-200 bg-white shadow-card transition-all hover:shadow-card-hover"
                     >
-                      <div className="flex h-40 items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100">
+                      <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100">
                         {biz.logoUrl ? (
                           <img
                             src={biz.logoUrl}
@@ -506,6 +506,12 @@ export default function HomePage() {
                               .join('')
                               .slice(0, 2)
                               .toUpperCase()}
+                          </span>
+                        )}
+                        {biz.isDemo && (
+                          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-md bg-amber-500/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow ring-1 ring-amber-600/30 backdrop-blur-sm">
+                            <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                            Demo
                           </span>
                         )}
                       </div>
@@ -551,6 +557,11 @@ export default function HomePage() {
                         {biz.shortDescription && (
                           <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-surface-500">
                             {biz.shortDescription}
+                          </p>
+                        )}
+                        {biz.isDemo && (
+                          <p className="mt-3 border-l-2 border-amber-300 bg-amber-50/60 pl-2 py-1 text-[11px] italic leading-snug text-amber-700">
+                            Sample listing for demonstration purposes only — not a real business.
                           </p>
                         )}
                         <div className="mt-auto pt-4">
@@ -636,7 +647,7 @@ export default function HomePage() {
                         to={`/business/${biz.slug}`}
                         className="group flex h-full flex-col overflow-hidden rounded-xl border border-surface-200 bg-white shadow-card transition-all hover:shadow-card-hover"
                       >
-                        <div className="flex h-40 items-center justify-center bg-gradient-to-br from-teal-50 to-teal-100">
+                        <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-teal-50 to-teal-100">
                           {biz.logoUrl ? (
                             <img
                               src={biz.logoUrl}
@@ -651,6 +662,12 @@ export default function HomePage() {
                                 .join('')
                                 .slice(0, 2)
                                 .toUpperCase()}
+                            </span>
+                          )}
+                          {biz.isDemo && (
+                            <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-md bg-amber-500/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow ring-1 ring-amber-600/30 backdrop-blur-sm">
+                              <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                              Demo
                             </span>
                           )}
                         </div>
@@ -700,6 +717,11 @@ export default function HomePage() {
                           {biz.shortDescription && (
                             <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-surface-500">
                               {biz.shortDescription}
+                            </p>
+                          )}
+                          {biz.isDemo && (
+                            <p className="mt-3 border-l-2 border-amber-300 bg-amber-50/60 pl-2 py-1 text-[11px] italic leading-snug text-amber-700">
+                              Sample listing for demonstration purposes only — not a real business.
                             </p>
                           )}
                           <div className="mt-auto pt-4">

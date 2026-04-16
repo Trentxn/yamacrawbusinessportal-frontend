@@ -55,6 +55,15 @@ export const adminApi = {
     return client.put(`/admin/businesses/${id}/feature`, { isFeatured: featured })
   },
 
+  // Demo listings (system_admin only) — hard delete
+  hardDeleteDemoBusiness(id: string) {
+    return client.delete<{ message: string }>(`/admin/businesses/${id}/hard`)
+  },
+
+  deleteAllDemoBusinesses() {
+    return client.delete<{ message: string }>('/admin/businesses/demo/all')
+  },
+
   // All businesses
   listAllBusinesses(params?: {
     status?: string
