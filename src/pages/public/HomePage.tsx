@@ -19,6 +19,7 @@ import client from '@/api/client'
 import type { Category } from '@/api/types'
 import { getCategoryIcon } from '@/utils/categoryIcons'
 import { useAuth } from '@/contexts/AuthContext'
+import HibiscusAccent from '@/components/HibiscusAccent'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -391,8 +392,18 @@ export default function HomePage() {
       </section>
 
       {/* Categories */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mb-12 text-center">
+      <section className="relative mx-auto max-w-7xl overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
+        <HibiscusAccent
+          className="absolute -right-16 -top-10 hidden h-72 w-72 md:block"
+          rotate={-18}
+          opacity="opacity-[0.05]"
+        />
+        <HibiscusAccent
+          className="absolute -bottom-20 -left-14 hidden h-64 w-64 md:block"
+          rotate={140}
+          opacity="opacity-[0.04]"
+        />
+        <div className="relative mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-surface-900 sm:text-4xl">
             Browse by Category
           </h2>
@@ -769,13 +780,23 @@ export default function HomePage() {
       ) : null}
 
       {/* About Snippet */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="relative mx-auto max-w-7xl overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
+        <HibiscusAccent
+          className="absolute -left-10 top-6 hidden h-52 w-52 md:block"
+          rotate={-30}
+          opacity="opacity-[0.05]"
+        />
+        <HibiscusAccent
+          className="absolute -right-8 bottom-6 hidden h-56 w-56 md:block"
+          rotate={160}
+          opacity="opacity-[0.05]"
+        />
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.05 }}
           variants={fadeUp}
-          className="mx-auto max-w-3xl text-center"
+          className="relative mx-auto max-w-3xl text-center"
         >
           <h2 className="text-3xl font-bold tracking-tight text-surface-900 sm:text-4xl">
             Strengthening Our Community
@@ -804,8 +825,18 @@ export default function HomePage() {
 
       {/* Community Testimonials */}
       {testimonials && testimonials.length > 0 && (
-        <section className="bg-surface-50 py-20">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-surface-50 py-20">
+          <HibiscusAccent
+            className="absolute -bottom-24 -left-16 hidden h-80 w-80 lg:block"
+            rotate={25}
+            opacity="opacity-[0.05]"
+          />
+          <HibiscusAccent
+            className="absolute -top-16 right-6 hidden h-56 w-56 lg:block"
+            rotate={-25}
+            opacity="opacity-[0.04]"
+          />
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.div
               initial="hidden"
               whileInView="visible"
