@@ -1,0 +1,7 @@
+node_modules/
+out/
+*.mp4
+*.webm
+package-lock.json
+.env
+assets/music.mp3

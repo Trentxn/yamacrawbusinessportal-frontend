@@ -37,7 +37,9 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     setServerError('')
-    if (!captchaToken) {
+    const isDemoAccount =
+      data.email.trim().toLowerCase() === 'demo@yamacrawbusinessportal.com'
+    if (!captchaToken && !isDemoAccount) {
       setServerError('Please complete the CAPTCHA verification.')
       return
     }

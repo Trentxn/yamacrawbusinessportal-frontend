@@ -1,0 +1,55 @@
+{
+  "voice": "en-US-AvaMultilingualNeural",
+  "rate": "-4%",
+  "pitch": "+0Hz",
+  "lines": [
+    {
+      "id": "01_hero",
+      "step": "hero",
+      "heading": "Welcome",
+      "text": "Welcome to the Yamacraw Business Portal — a civic directory built for the Yamacraw community in The Bahamas. We connect residents with the local businesses, contractors, and service providers that make their neighbourhood thrive."
+    },
+    {
+      "id": "02_featured",
+      "step": "featured",
+      "heading": "Featured Listings",
+      "text": "Right from the homepage, you can see featured listings — from family-run restaurants to government-contracted tradesmen. Each listing is reviewed and approved before it goes live, so residents know what they're looking at is trusted."
+    },
+    {
+      "id": "03_categories",
+      "step": "categories",
+      "heading": "Browse by Category",
+      "text": "Browsing by category is the fastest way to find what you need. Restaurants, beauty and wellness, auto services, construction trades — every type of business that serves the Yamacraw area, one click away."
+    },
+    {
+      "id": "04_directory",
+      "step": "directory",
+      "heading": "The Full Directory",
+      "text": "The full directory lets you filter by category, or jump to contractors specifically — handy for government tenders or major home projects. Every card shows a logo, a rating, and a quick summary, so you can scan fast."
+    },
+    {
+      "id": "05_detail",
+      "step": "detail",
+      "heading": "Business Profile",
+      "text": "Opening a listing gives you everything you need in one place: photos, reviews, operating hours, contact details, and a direct inquiry form. Residents don't have to dig through social media — they reach the business straight from the portal."
+    },
+    {
+      "id": "06_dashboard",
+      "step": "dashboard",
+      "heading": "Owner Dashboard",
+      "text": "For the business owners and contractors in our community, the portal is just as simple. After signing up, you land on a dashboard that shows all your listings, views, inquiries, and reviews at a glance."
+    },
+    {
+      "id": "07_create",
+      "step": "create",
+      "heading": "Create a Listing",
+      "text": "Creating a listing takes a few minutes — name, category, description, hours, photos, and you're submitted for admin review. Once approved, you're discoverable to everyone in Yamacraw and beyond."
+    },
+    {
+      "id": "08_close",
+      "step": "inquiries",
+      "heading": "Stay Responsive",
+      "text": "Inquiries from residents come straight into your inbox. You can reply, mark as spam, or close them out — everything the business needs to stay responsive. The Yamacraw Business Portal — built for the community, owned by the community."
+    }
+  ]
+}

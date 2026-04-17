@@ -1,0 +1,19 @@
+{
+  "name": "yamacraw-demo-video",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Automated demo video pipeline for the Yamacraw Business Portal.",
+  "type": "module",
+  "scripts": {
+    "narrate": "node narrate.mjs",
+    "record": "node record.mjs",
+    "mux": "node mux.mjs",
+    "build-video": "npm run narrate && npm run record && npm run mux"
+  },
+  "dependencies": {
+    "execa": "^9.5.2",
+    "ffmpeg-static": "^5.2.0",
+    "ffprobe-static": "^3.1.0",
+    "playwright": "^1.49.1"
+  }
+}
