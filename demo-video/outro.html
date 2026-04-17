@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1920px; height: 1080px; overflow: hidden;
+    background: linear-gradient(135deg, #0C1926 0%, #1B3A5C 50%, #0C1926 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #fff;
+  }
+
+  .line {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: rollIn 0.9s ease forwards;
+  }
+
+  .title {
+    font-size: 72px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    animation-delay: 0.5s;
+  }
+
+  .accent {
+    color: #D4A843;
+  }
+
+  .divider {
+    width: 120px; height: 3px;
+    background: linear-gradient(90deg, transparent, #D4A843, transparent);
+    margin: 28px 0;
+    animation-delay: 2.3s;
+  }
+
+  .motto {
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.85);
+    animation-delay: 2.8s;
+  }
+
+  .url {
+    position: absolute;
+    bottom: 60px;
+    font-size: 20px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    animation-delay: 5.0s;
+  }
+
+  @keyframes rollIn {
+    0%   { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+  <div class="line title">
+    <span class="accent">Yamacraw</span> Business Portal
+  </div>
+  <div class="line divider"></div>
+  <div class="line motto">
+    Built by the community, owned by the community.
+  </div>
+  <div class="line url">
+    yamacrawbusinessportal.com
+  </div>
+</body>
+</html>

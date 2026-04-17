@@ -29,11 +29,23 @@ const audioDir = path.join(outDir, 'audio')
 const tmpDir = path.join(outDir, 'tmp')
 const assetsDir = path.join(__dirname, 'assets')
 
-const USER_MUSIC_PATH = path.join(assetsDir, 'music.mp3')
+import { readdirSync } from 'node:fs'
+
+function findMusicFile() {
+  const preferred = path.join(assetsDir, 'music.mp3')
+  if (existsSync(preferred)) return preferred
+  try {
+    const mp3 = readdirSync(assetsDir).find((f) => f.endsWith('.mp3'))
+    return mp3 ? path.join(assetsDir, mp3) : preferred
+  } catch {
+    return preferred
+  }
+}
+const USER_MUSIC_PATH = findMusicFile()
 const FONT_FILE = 'C\\:/Windows/Fonts/georgiab.ttf' // escaped for ffmpeg filter
 
 const LEAD_IN_SEC = 0.6
-const MUSIC_GAIN_DB = -20
+const MUSIC_GAIN_DB = -10
 const AMBIENT_GAIN_DB = -24
 const HEADING_SHOW_START = 1.0 // seconds into each beat when title appears
 const HEADING_SHOW_DURATION = 4.0 // how long the heading stays on screen
@@ -155,7 +167,7 @@ async function main() {
     await ffmpeg([
       '-i', b.videoPath,
       ...vf,
-      '-c:v', 'libx264', '-preset', 'medium', '-crf', '20',
+      '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',
       '-r', '30',
       '-pix_fmt', 'yuv420p',
       '-an',
@@ -164,12 +176,33 @@ async function main() {
     headedClips.push(out)
   }
 
-  // ── 3b. Concatenate headed clips ───────────────────────────────────────
-  console.log('[mux] concatenating video ...')
+  // ── 3b. Soften each clip's edges with fade-in/out, then concat ───────
+  console.log('[mux] softening clip edges + concatenating ...')
+  const FADE_DUR = 0.25
+  const softenedClips = []
+  for (let i = 0; i < headedClips.length; i++) {
+    const src = headedClips[i]
+    const out = path.join(tmpDir, `soft_${i}.mp4`)
+    const dur = beats[i].videoDur
+    const fadeOutStart = Math.max(0, dur - FADE_DUR)
+    const filters = []
+    if (i > 0) filters.push(`fade=t=in:st=0:d=${FADE_DUR}`)
+    if (i < headedClips.length - 1) filters.push(`fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${FADE_DUR}`)
+    await ffmpeg([
+      '-i', src,
+      ...(filters.length ? ['-vf', filters.join(',')] : []),
+      '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',
+      '-r', '30',
+      '-pix_fmt', 'yuv420p',
+      '-an',
+      out,
+    ])
+    softenedClips.push(out)
+  }
   const concatListPath = path.join(tmpDir, 'video_concat.txt')
   await fs.writeFile(
     concatListPath,
-    headedClips.map((p) => `file '${p.replace(/\\/g, '/')}'`).join('\n'),
+    softenedClips.map((p) => `file '${p.replace(/\\/g, '/')}'`).join('\n'),
   )
   const concatVideo = path.join(tmpDir, 'video.mp4')
   await ffmpeg([
@@ -231,6 +264,44 @@ async function main() {
     ])
   }
 
+  // ── 4b. Layer transition SFX between beats if available ──────────────
+  const sfxFile = audioManifest.transitionSfx
+    ? path.join(__dirname, audioManifest.transitionSfx)
+    : null
+  const hasSfx = sfxFile && existsSync(sfxFile)
+  if (hasSfx) {
+    console.log('[mux] layering transition SFX between beats ...')
+    const sfxDur = await probe(sfxFile)
+    // Build an overlay: place the SFX at each beat boundary offset
+    let offset = 0
+    const sfxInputs = []
+    const sfxFilters = []
+    for (let i = 0; i < beats.length - 1; i++) {
+      offset += beats[i].videoDur
+      const triggerAt = Math.max(0, offset - 0.3)
+      const idx = i + 1
+      sfxInputs.push('-i', sfxFile)
+      sfxFilters.push(
+        `[${idx}:a]volume=-18dB,adelay=${Math.round(triggerAt * 1000)}|${Math.round(triggerAt * 1000)}[sfx${i}]`,
+      )
+    }
+    if (sfxFilters.length > 0) {
+      const mixInputs = sfxFilters.map((_, i) => `[sfx${i}]`).join('')
+      const mixedWithSfx = path.join(tmpDir, 'narration_sfx.m4a')
+      await ffmpeg([
+        '-i', narrationFull,
+        ...sfxInputs,
+        '-filter_complex',
+        sfxFilters.join(';') + ';' +
+          `[0:a]${mixInputs}amix=inputs=${sfxFilters.length + 1}:duration=first:dropout_transition=0:normalize=0[out]`,
+        '-map', '[out]',
+        '-c:a', 'aac', '-b:a', '192k',
+        mixedWithSfx,
+      ])
+      await fs.rename(mixedWithSfx, narrationFull)
+    }
+  }
+
   // ── 5. Mix narration + bed ─────────────────────────────────────────────
   console.log(`[mux] mixing narration + bed at ${bedGainDb} dB ...`)
   const mixedAudio = path.join(tmpDir, 'mixed.m4a')
@@ -246,8 +317,8 @@ async function main() {
   ])
 
   // ── 6. Final mux ───────────────────────────────────────────────────────
-  console.log('[mux] producing final.mp4 ...')
-  const finalOut = path.join(outDir, 'final.mp4')
+  console.log('[mux] producing video-tutorial-ybp.mp4 ...')
+  const finalOut = path.join(outDir, 'video-tutorial-ybp.mp4')
   await ffmpeg([
     '-i', concatVideo,
     '-i', mixedAudio,

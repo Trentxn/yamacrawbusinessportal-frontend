@@ -69,10 +69,12 @@
   background-color: transparent !important;
 }
 
-/* Ensure gradient text works on iOS Safari */
+/* Ensure gradient text works on iOS Safari — the isolate wrapper
+   prevents parent Framer Motion transforms from breaking the clip. */
 .bg-clip-text {
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
+  -webkit-transform: translateZ(0);
 }
 
 /* Hero background animations */

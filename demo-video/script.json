@@ -34,22 +34,34 @@
       "text": "Opening a listing gives you everything you need in one place: photos, reviews, operating hours, contact details, and a direct inquiry form. Residents don't have to dig through social media — they reach the business straight from the portal."
     },
     {
-      "id": "06_dashboard",
+      "id": "06_about",
+      "step": "about",
+      "heading": "Why This Exists",
+      "text": "But this portal exists for a reason. Minister Zane Lightbourne and his office recognised that talented Yamacraw businesses and tradesmen were going unseen — not because they weren't great at what they do, but because residents simply couldn't find them. This isn't just a website. It's an investment in the people who make Yamacraw feel like home."
+    },
+    {
+      "id": "07_dashboard",
       "step": "dashboard",
       "heading": "Owner Dashboard",
       "text": "For the business owners and contractors in our community, the portal is just as simple. After signing up, you land on a dashboard that shows all your listings, views, inquiries, and reviews at a glance."
     },
     {
-      "id": "07_create",
+      "id": "08_create",
       "step": "create",
       "heading": "Create a Listing",
       "text": "Creating a listing takes a few minutes — name, category, description, hours, photos, and you're submitted for admin review. Once approved, you're discoverable to everyone in Yamacraw and beyond."
     },
     {
-      "id": "08_close",
+      "id": "09_inquiries",
       "step": "inquiries",
       "heading": "Stay Responsive",
-      "text": "Inquiries from residents come straight into your inbox. You can reply, mark as spam, or close them out — everything the business needs to stay responsive. The Yamacraw Business Portal — built for the community, owned by the community."
+      "text": "Inquiries from residents arrive straight in the business's inbox. They can reply, close, or mark as spam — everything they need to stay responsive. And for residents with questions of their own, the Contact page is always just one click away."
+    },
+    {
+      "id": "10_outro",
+      "step": "outro",
+      "heading": "",
+      "text": "The Yamacraw Business Portal. Built by the community, owned by the community."
     }
   ]
 }

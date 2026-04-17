@@ -60,9 +60,9 @@ async function ttsElevenLabs({ text, out, voiceId, apiKey }) {
     text,
     model_id: 'eleven_turbo_v2_5',
     voice_settings: {
-      stability: 0.55,
-      similarity_boost: 0.75,
-      style: 0.15,
+      stability: 0.40,
+      similarity_boost: 0.80,
+      style: 0.25,
       use_speaker_boost: true,
     },
   }
@@ -148,6 +148,36 @@ async function main() {
       durationSec: duration,
     })
     console.log(`[narrate]   duration: ${duration.toFixed(2)}s`)
+  }
+
+  // Generate a subtle transition SFX via ElevenLabs Sound Generation (free tier)
+  const sfxPath = path.join(audioDir, 'transition.mp3')
+  if (provider === 'elevenlabs') {
+    console.log('[narrate] generating transition SFX ...')
+    try {
+      const sfxRes = await fetch('https://api.elevenlabs.io/v1/sound-generation', {
+        method: 'POST',
+        headers: {
+          'xi-api-key': process.env.ELEVENLABS_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg',
+        },
+        body: JSON.stringify({
+          text: 'gentle soft digital whoosh transition, subtle and clean',
+          duration_seconds: 1.2,
+        }),
+      })
+      if (sfxRes.ok) {
+        const buf = Buffer.from(await sfxRes.arrayBuffer())
+        await fs.writeFile(sfxPath, buf)
+        manifest.transitionSfx = path.relative(__dirname, sfxPath).replace(/\\/g, '/')
+        console.log('[narrate] transition SFX saved')
+      } else {
+        console.log('[narrate] SFX generation skipped (non-200 response)')
+      }
+    } catch {
+      console.log('[narrate] SFX generation skipped (network error)')
+    }
   }
 
   const totalSec = manifest.lines.reduce((s, l) => s + l.durationSec, 0)

@@ -337,14 +337,17 @@ export default function HomePage() {
               <motion.h1
                 variants={fadeUp}
                 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl"
+                style={{ willChange: 'opacity' }}
               >
                 Discover Yamacraw's
                 <br />
-                <span
-                  className="bg-gradient-to-r from-white via-accent-200 to-accent-400 bg-clip-text text-transparent"
-                  style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-                >
-                  Local Businesses
+                <span className="isolate inline-block">
+                  <span
+                    className="bg-gradient-to-r from-white via-accent-200 to-accent-400 bg-clip-text text-transparent"
+                    style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                  >
+                    Local Businesses
+                  </span>
                 </span>
               </motion.h1>
 

@@ -26,14 +26,16 @@ const VIEWPORT = { width: 1920, height: 1080 }
 // the viewer gets a beat to absorb what they just heard. Tuned so total runtime
 // sits near 3:40.
 const PADDING_SEC = {
-  hero: 3,
-  featured: 4,
-  categories: 3,
-  directory: 4,
-  detail: 6,
-  dashboard: 4,
-  create: 4,
-  inquiries: 3,
+  hero: 1.5,
+  featured: 1.5,
+  categories: 1.5,
+  directory: 1.5,
+  detail: 2,
+  about: 2,
+  dashboard: 2,
+  create: 1.5,
+  inquiries: 1.5,
+  outro: 2,
 }
 
 const DEMO_EMAIL = 'demo@yamacrawbusinessportal.com'
@@ -140,7 +142,8 @@ async function main() {
     { id: 'hero', durationMs: beatDuration('hero') },
     async (page) => {
       await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' })
-      await sleep(2000)
+      await sleep(1500)
+      await slowScrollDown(page, 120, { duration: 3000 })
     },
   )
   manifest.beats.push(result)
@@ -151,121 +154,192 @@ async function main() {
     { id: 'featured', durationMs: beatDuration('featured') },
     async (page) => {
       await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' })
-      await sleep(800)
-      // Scroll to Featured Businesses section via heading text
+      await sleep(500)
       await page.evaluate(() => {
         const h = [...document.querySelectorAll('h2')].find((el) =>
           el.textContent?.toLowerCase().includes('featured businesses'),
         )
         h?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       })
-      await sleep(3000)
-      // Gentle additional scroll to reveal contractor row
-      await slowScrollDown(page, 400, { duration: 3000 })
+      await sleep(2000)
+      await slowScrollDown(page, 350, { duration: 4000 })
+      await slowScrollDown(page, 200, { duration: 2500 })
     },
   )
   manifest.beats.push(result)
 
-  // 3 — browse by category grid
+  // 3 — browse by category: go to /directory and click through category pills
   console.log('[record] beat 3/8: categories')
   result = await recordBeat(
     { id: 'categories', durationMs: beatDuration('categories') },
     async (page) => {
-      await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' })
-      await sleep(500)
-      await page.evaluate(() => {
-        const h = [...document.querySelectorAll('h2')].find((el) =>
-          el.textContent?.toLowerCase().includes('browse by category'),
-        )
-        h?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      })
-      await sleep(3500)
-      await slowScrollDown(page, 300, { duration: 3000 })
+      await page.goto(`${BASE_URL}/directory`, { waitUntil: 'domcontentloaded' })
+      await sleep(1500)
+      // Click "Restaurants & Food" category pill
+      const pills = page.locator('button, a').filter({ hasText: 'Restaurants & Food' })
+      if (await pills.count() > 0) {
+        await pills.first().click()
+        await sleep(2000)
+      }
+      // Click "Beauty & Wellness"
+      const beauty = page.locator('button, a').filter({ hasText: 'Beauty & Wellness' })
+      if (await beauty.count() > 0) {
+        await beauty.first().click()
+        await sleep(2000)
+      }
+      // Click "Construction & Trades"
+      const construction = page.locator('button, a').filter({ hasText: 'Construction & Trades' })
+      if (await construction.count() > 0) {
+        await construction.first().click()
+        await sleep(2000)
+      }
+      // Back to All
+      const all = page.locator('button, a').filter({ hasText: /^All$/ })
+      if (await all.count() > 0) {
+        await all.first().click()
+        await sleep(1500)
+      }
     },
   )
   manifest.beats.push(result)
 
-  // 4 — directory filtering
+  // 4 — directory filtering (contractors tab + scroll)
   console.log('[record] beat 4/8: directory')
   result = await recordBeat(
     { id: 'directory', durationMs: beatDuration('directory') },
     async (page) => {
       await page.goto(`${BASE_URL}/directory`, { waitUntil: 'domcontentloaded' })
-      await sleep(2500)
-      // Gentle scroll through results
-      await slowScrollDown(page, 500, { duration: 4000 })
+      await sleep(1200)
+      // Click "Contractors" type tab
+      const contractors = page.locator('button, a').filter({ hasText: 'Contractors' })
+      if (await contractors.count() > 0) {
+        await contractors.first().click()
+        await sleep(2000)
+      }
+      await slowScrollDown(page, 400, { duration: 3000 })
       await sleep(500)
-      // Scroll back up to show filters
+      // Back to All type
+      const allType = page.locator('button, a').filter({ hasText: /^All$/ }).first()
+      if (await allType.count() > 0) {
+        await allType.click()
+        await sleep(1000)
+      }
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
-      await sleep(2000)
+      await sleep(1200)
     },
   )
   manifest.beats.push(result)
 
   // 5 — business detail
-  console.log('[record] beat 5/8: detail')
+  console.log('[record] beat 5/10: detail')
   result = await recordBeat(
     { id: 'detail', durationMs: beatDuration('detail') },
     async (page) => {
       await page.goto(`${BASE_URL}/business/conch-shack-yamacraw-demo`, {
         waitUntil: 'domcontentloaded',
       })
-      await sleep(2500)
-      // Scroll slowly through the page
-      await slowScrollDown(page, 900, { duration: 6000 })
-      await sleep(1000)
-      await slowScrollDown(page, 700, { duration: 5000 })
+      await sleep(1500)
+      await slowScrollDown(page, 600, { duration: 4000 })
+      await sleep(500)
+      await slowScrollDown(page, 500, { duration: 3500 })
+      await sleep(300)
+      await slowScrollDown(page, 400, { duration: 3000 })
     },
   )
   manifest.beats.push(result)
 
-  // 6 — login + dashboard
-  console.log('[record] beat 6/8: dashboard (with login)')
+  // 6 — about page (Minister + mission)
+  console.log('[record] beat 6/10: about')
+  result = await recordBeat(
+    { id: 'about', durationMs: beatDuration('about') },
+    async (page) => {
+      await page.goto(`${BASE_URL}/about`, { waitUntil: 'domcontentloaded' })
+      await sleep(2000)
+      // Slowly scroll to reveal Minister section + mission tiles
+      await slowScrollDown(page, 500, { duration: 5000 })
+      await sleep(800)
+      await slowScrollDown(page, 400, { duration: 4000 })
+    },
+  )
+  manifest.beats.push(result)
+
+  // 7 — login + dashboard
+  console.log('[record] beat 7/10: dashboard (with login)')
   result = await recordBeat(
     { id: 'dashboard', durationMs: beatDuration('dashboard') },
     async (page) => {
+      // Pre-set tour-completed flags so the guided tour doesn't trigger
       await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded' })
-      await sleep(800)
+      await page.evaluate(() => {
+        localStorage.setItem('ybp_dashboard_tour_completed', 'true')
+        localStorage.setItem('ybp_dashboard_tour_completed_contractor', 'true')
+        localStorage.setItem('ybp_account_tour_completed', 'true')
+      })
+      await sleep(500)
       await page.fill('#email', DEMO_EMAIL)
-      await sleep(400)
+      await sleep(300)
       await page.fill('#password', DEMO_PASSWORD)
-      await sleep(400)
+      await sleep(300)
       await page.click('button[type="submit"]')
-      await page.waitForURL(/\/dashboard/, { timeout: 15000 }).catch(() => {})
-      await sleep(3000)
-      // Gentle scroll through the overview
+      // Wait briefly for auth to complete, then navigate directly to dashboard
+      await sleep(2500)
+      await page.goto(`${BASE_URL}/dashboard/overview`, { waitUntil: 'domcontentloaded' })
+      await sleep(2000)
       await slowScrollDown(page, 500, { duration: 4000 })
+      await sleep(500)
+      await slowScrollDown(page, 300, { duration: 2500 })
     },
   )
   storageState = result.storageState
   manifest.beats.push(result)
 
-  // 7 — create listing form
-  console.log('[record] beat 7/8: create listing')
+  // 8 — create listing form
+  console.log('[record] beat 8/10: create listing')
   result = await recordBeat(
     { id: 'create', durationMs: beatDuration('create'), storageState },
     async (page) => {
       await page.goto(`${BASE_URL}/dashboard/listings/new`, { waitUntil: 'domcontentloaded' })
-      await sleep(2500)
-      await slowScrollDown(page, 700, { duration: 6000 })
-      await sleep(500)
+      await sleep(1200)
       await slowScrollDown(page, 500, { duration: 4000 })
+      await sleep(300)
+      await slowScrollDown(page, 500, { duration: 3500 })
+      await sleep(300)
+      await slowScrollDown(page, 400, { duration: 3000 })
     },
   )
   manifest.beats.push(result)
 
-  // 8 — inquiries + outro
-  console.log('[record] beat 8/8: inquiries + outro')
+  // 9 — inquiries (closes with a brief trip to the Contact page)
+  console.log('[record] beat 9/10: inquiries + contact')
   result = await recordBeat(
     { id: 'inquiries', durationMs: beatDuration('inquiries'), storageState },
     async (page) => {
       await page.goto(`${BASE_URL}/dashboard/inquiries`, { waitUntil: 'domcontentloaded' })
-      await sleep(3000)
-      await slowScrollDown(page, 400, { duration: 3500 })
       await sleep(1500)
-      // Outro: go back to homepage for the closing line
-      await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' })
+      await slowScrollDown(page, 300, { duration: 2500 })
+      await sleep(600)
+      // Click the first inquiry row to show reply flow
+      const firstRow = page.locator('tr').nth(1)
+      if (await firstRow.count() > 0) {
+        await firstRow.click()
+        await sleep(2500)
+      }
+      // End by navigating to the public Contact page so the narrator's
+      // Contact mention has a matching visual.
+      await page.goto(`${BASE_URL}/contact`, { waitUntil: 'domcontentloaded' })
       await sleep(2500)
+    },
+  )
+  manifest.beats.push(result)
+
+  // 10 — animated outro card (narration plays synced to animation delays)
+  console.log('[record] beat 10/10: outro')
+  const outroHtml = path.join(__dirname, 'outro.html')
+  result = await recordBeat(
+    { id: 'outro', durationMs: beatDuration('outro') + 1500 },
+    async (page) => {
+      await page.goto(`file://${outroHtml.replace(/\\/g, '/')}`, { waitUntil: 'domcontentloaded' })
+      await sleep(300)
     },
   )
   manifest.beats.push(result)
