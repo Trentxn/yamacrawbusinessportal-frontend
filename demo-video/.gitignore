@@ -4,4 +4,4 @@ out/
 *.webm
 package-lock.json
 .env
-assets/music.mp3
+assets/*.mp3

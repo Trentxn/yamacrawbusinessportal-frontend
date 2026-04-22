@@ -45,7 +45,7 @@ const USER_MUSIC_PATH = findMusicFile()
 const FONT_FILE = 'C\\:/Windows/Fonts/georgiab.ttf' // escaped for ffmpeg filter
 
 const LEAD_IN_SEC = 0.6
-const MUSIC_GAIN_DB = -10
+const MUSIC_GAIN_DB = -5
 const AMBIENT_GAIN_DB = -24
 const HEADING_SHOW_START = 1.0 // seconds into each beat when title appears
 const HEADING_SHOW_DURATION = 4.0 // how long the heading stays on screen
@@ -85,22 +85,24 @@ async function main() {
     audioManifest.lines.map((l) => [l.step, l]),
   )
 
-  // ── 1. Probe each WebM ──────────────────────────────────────────────────
-  console.log('[mux] probing clips ...')
+  // ── 1. Probe clips + audio at runtime so friend's voiceover swap syncs.
+  console.log('[mux] probing clips + audio ...')
   const beats = []
-  for (const b of videoManifest.beats) {
+  for (const b of videoManifest.beats.filter((x) => !x.isTransition)) {
     const clip = path.join(__dirname, b.file)
     const dur = await probe(clip)
     const audio = audioByStep[b.id]
+    const audioPath = audio ? path.join(__dirname, audio.file) : null
+    const audioDur = audioPath && existsSync(audioPath) ? await probe(audioPath) : 0
     beats.push({
       id: b.id,
       videoPath: clip,
       videoDur: dur,
-      audioPath: audio ? path.join(__dirname, audio.file) : null,
-      audioDur: audio?.durationSec ?? 0,
+      audioPath,
+      audioDur,
       heading: audio?.heading ?? '',
     })
-    console.log(`[mux]   ${b.id}: video ${dur.toFixed(2)}s, audio ${(audio?.durationSec ?? 0).toFixed(2)}s, "${audio?.heading ?? ''}"`)
+    console.log(`[mux]   ${b.id}: video ${dur.toFixed(2)}s, audio ${audioDur.toFixed(2)}s, "${audio?.heading ?? ''}"`)
   }
 
   // ── 2. Per-beat narration tracks padded to video length ────────────────
@@ -147,9 +149,6 @@ async function main() {
       const end = HEADING_SHOW_START + HEADING_SHOW_DURATION
       const fade = 0.4
 
-      // drawtext handles its own background "pill" via box=1, and its
-      // expression parser knows h / tw / th so we can anchor to the
-      // bottom-left even though drawbox cannot.
       const drawText =
         `drawtext=fontfile='${FONT_FILE}'` +
         `:text='${text}'` +
@@ -213,8 +212,11 @@ async function main() {
     concatVideo,
   ])
 
-  // ── 3c. Concatenate per-beat narration ─────────────────────────────────
-  console.log('[mux] concatenating narration ...')
+  // ── 3c. Concatenate per-beat narration + loudness-normalize ─────────
+  // loudnorm lifts quiet recordings and tames loud ones to a consistent
+  // broadcast-grade level so the mix is predictable regardless of how
+  // the narrator set their input gain.
+  console.log('[mux] concatenating + loudness-normalizing narration ...')
   const audioConcatList = path.join(tmpDir, 'audio_concat.txt')
   await fs.writeFile(
     audioConcatList,
@@ -223,7 +225,9 @@ async function main() {
   const narrationFull = path.join(tmpDir, 'narration.m4a')
   await ffmpeg([
     '-f', 'concat', '-safe', '0', '-i', audioConcatList,
+    '-af', 'loudnorm=I=-11:TP=-1.0:LRA=9',
     '-c:a', 'aac', '-b:a', '192k',
+    '-ar', '44100',
     narrationFull,
   ])
 

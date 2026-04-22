@@ -347,9 +347,10 @@ async function main() {
   // Persist manifest (stripping bulky storageState fields)
   const thin = {
     viewport: manifest.viewport,
-    beats: manifest.beats.map(({ id, file }) => ({
+    beats: manifest.beats.map(({ id, file, isTransition, step }) => ({
       id,
       file: path.relative(__dirname, file).replace(/\\/g, '/'),
+      ...(isTransition ? { isTransition: true, step } : {}),
     })),
   }
   await fs.writeFile(
